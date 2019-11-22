@@ -14,11 +14,20 @@ type EventUsecases struct {
 	EventStorage interfaces.EventStorage
 }
 
-//CreateEvent - создание события в календаре
-func (es *EventUsecases) CreateEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) (*entities.Event, error) {
+//AddEvent - создание события в календаре
+func (es *EventUsecases) AddEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) error {
 	event := &entities.Event{ID: uuid.NewV4(), User: user, Title: title, Body: body, StartTime: startTime, EndTime: endTime}
 	if err := es.EventStorage.SaveEvent(ctx, event); err != nil {
+		return err
+	}
+	return nil
+}
+
+//GetCountEvent ...
+func (es *EventUsecases) GetCountEvent(ctx context.Context) (*int, error) {
+	cnt, err := es.EventStorage.GetCountEvent(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return event, nil
+	return &cnt, nil
 }

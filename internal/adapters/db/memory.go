@@ -11,6 +11,7 @@ import (
 type MemEventStorage struct {
 	mux *sync.Mutex
 	db  []*entities.Event
+	cnt int
 }
 
 //NewMemEventStorage ...
@@ -19,17 +20,18 @@ func NewMemEventStorage() (*MemEventStorage, error) {
 }
 
 //SaveEvent ...
-func (mem *MemEventStorage) SaveEvent(ctx context.Context, event *entities.Event) error {
-	mem.mux.Lock()
-	mem.db = append(mem.db, event)
-	mem.mux.Unlock()
+func (m *MemEventStorage) SaveEvent(ctx context.Context, event *entities.Event) error {
+	m.mux.Lock()
+	m.db = append(m.db, event)
+	m.cnt++
+	m.mux.Unlock()
 	return nil
 }
 
 //GetCountEvent ...
-func (mem *MemEventStorage) GetCountEvent(ctx context.Context) (int, error) {
-	mem.mux.Lock()
-	cnt := len(mem.db)
-	mem.mux.Unlock()
+func (m *MemEventStorage) GetCountEvent(ctx context.Context) (int, error) {
+	m.mux.Lock()
+	cnt := m.cnt
+	m.mux.Unlock()
 	return cnt, nil
 }
