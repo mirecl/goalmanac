@@ -11,21 +11,21 @@ import (
 
 //EventUsecases - структура для работы со всем внешними источниками данных
 type EventUsecases struct {
-	EventStorage interfaces.EventStorage
+	db interfaces.EventStorage
 }
 
 //AddEvent - создание события в календаре
-func (es *EventUsecases) AddEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) error {
-	event := &entities.Event{ID: uuid.NewV4(), User: user, Title: title, Body: body, StartTime: startTime, EndTime: endTime}
-	if err := es.EventStorage.SaveEvent(ctx, event); err != nil {
+func (event *EventUsecases) AddEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) error {
+	eventNew := &entities.Event{ID: uuid.NewV4(), User: user, Title: title, Body: body, StartTime: startTime, EndTime: endTime}
+	if err := event.db.Save(ctx, eventNew); err != nil {
 		return err
 	}
 	return nil
 }
 
 //GetCountEvent ...
-func (es *EventUsecases) GetCountEvent(ctx context.Context) (*int, error) {
-	cnt, err := es.EventStorage.GetCountEvent(ctx)
+func (event *EventUsecases) GetCountEvent(ctx context.Context) (*int, error) {
+	cnt, err := event.db.GetCount(ctx)
 	if err != nil {
 		return nil, err
 	}

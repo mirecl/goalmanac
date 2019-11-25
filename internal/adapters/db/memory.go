@@ -19,8 +19,8 @@ func NewMemEventStorage() (*MemEventStorage, error) {
 	return &MemEventStorage{db: make([]*entities.Event, 0, 100), mux: &sync.Mutex{}}, nil
 }
 
-//SaveEvent ...
-func (m *MemEventStorage) SaveEvent(ctx context.Context, event *entities.Event) error {
+//Save ...
+func (m *MemEventStorage) Save(ctx context.Context, event *entities.Event) error {
 	m.mux.Lock()
 	m.db = append(m.db, event)
 	m.cnt++
@@ -28,8 +28,8 @@ func (m *MemEventStorage) SaveEvent(ctx context.Context, event *entities.Event) 
 	return nil
 }
 
-//GetCountEvent ...
-func (m *MemEventStorage) GetCountEvent(ctx context.Context) (int, error) {
+//GetCount ...
+func (m *MemEventStorage) GetCount(ctx context.Context) (int, error) {
 	m.mux.Lock()
 	cnt := m.cnt
 	m.mux.Unlock()

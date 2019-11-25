@@ -8,6 +8,6 @@ import (
 
 //EventStorage - интерфейс для работы с usecases календаря
 type EventStorage interface {
-	SaveEvent(ctx context.Context, event *entities.Event) error
-	GetCountEvent(ctx context.Context) (int, error)
+	Save(ctx context.Context, event *entities.Event) error
+	GetCount(ctx context.Context) (int, error)
 }

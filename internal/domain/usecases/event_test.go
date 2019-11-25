@@ -11,7 +11,7 @@ import (
 
 func TestAdd(t *testing.T) {
 	memdb, _ := db.NewMemEventStorage()
-	uses := &EventUsecases{EventStorage: memdb}
+	uses := &EventUsecases{db: memdb}
 	start := time.Now()
 	end := time.Now()
 	for i := 0; i < 20; i++ {

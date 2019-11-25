@@ -17,9 +17,9 @@ func TestSave(t *testing.T) {
 	event := &entities.Event{ID: uuid.NewV4(), User: "Grazhdankov", Title: "Golang", Body: "Tutorial and  big test", StartTime: &start, EndTime: &end}
 	memdb, _ := NewMemEventStorage()
 	for i := 0; i < 20; i++ {
-		memdb.SaveEvent(context.Background(), event)
+		memdb.Save(context.Background(), event)
 	}
 
-	cnt, _ := memdb.GetCountEvent(context.Background())
+	cnt, _ := memdb.GetCount(context.Background())
 	require.Equal(t, cnt, 20)
 }
