@@ -6,8 +6,9 @@ import (
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 )
 
-//EventStorage - интерфейс для работы с usecases календаря
+//EventStorage - интерфейс для работы с событиями календаря
 type EventStorage interface {
 	Save(ctx context.Context, event *entities.Event) error
 	GetCount(ctx context.Context) (int, error)
+	//... далее продолжу
 }

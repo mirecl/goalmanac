@@ -10,13 +10,16 @@ import (
 )
 
 func TestAdd(t *testing.T) {
-	memdb, _ := db.NewMemEventStorage()
+	memdb, _ := db.NewMemStorage()
 	uses := &EventUsecases{db: memdb}
+
 	start := time.Now()
 	end := time.Now()
+	ctx := context.Background()
+
 	for i := 0; i < 20; i++ {
-		_ = uses.AddEvent(context.Background(), "Grazhdankov", "Golang", "Tutorial and  big test", &start, &end)
+		_ = uses.AddEvent(ctx, "Grazhdankov", "Golang", "Tutorial", &start, &end)
 	}
-	cnt, _ := uses.GetCountEvent(context.Background())
+	cnt, _ := uses.GetCountEvent(ctx)
 	require.Equal(t, *cnt, 20)
 }

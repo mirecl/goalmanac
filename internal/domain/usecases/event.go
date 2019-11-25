@@ -16,14 +16,21 @@ type EventUsecases struct {
 
 //AddEvent - создание события в календаре
 func (event *EventUsecases) AddEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) error {
-	eventNew := &entities.Event{ID: uuid.NewV4(), User: user, Title: title, Body: body, StartTime: startTime, EndTime: endTime}
-	if err := event.db.Save(ctx, eventNew); err != nil {
+	new := &entities.Event{
+		ID:        uuid.NewV4(),
+		User:      user,
+		Title:     title,
+		Body:      body,
+		StartTime: startTime,
+		EndTime:   endTime}
+
+	if err := event.db.Save(ctx, new); err != nil {
 		return err
 	}
 	return nil
 }
 
-//GetCountEvent ...
+//GetCountEvent - получить число общее число событий
 func (event *EventUsecases) GetCountEvent(ctx context.Context) (*int, error) {
 	cnt, err := event.db.GetCount(ctx)
 	if err != nil {

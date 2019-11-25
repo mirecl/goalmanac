@@ -14,12 +14,12 @@ type MemEventStorage struct {
 	cnt int
 }
 
-//NewMemEventStorage ...
-func NewMemEventStorage() (*MemEventStorage, error) {
+//NewMemStorage - создаем инстанцию БД в памяти
+func NewMemStorage() (*MemEventStorage, error) {
 	return &MemEventStorage{db: make([]*entities.Event, 0, 100), mux: &sync.Mutex{}}, nil
 }
 
-//Save ...
+//Save - сохраняем событие
 func (m *MemEventStorage) Save(ctx context.Context, event *entities.Event) error {
 	m.mux.Lock()
 	m.db = append(m.db, event)
@@ -28,7 +28,7 @@ func (m *MemEventStorage) Save(ctx context.Context, event *entities.Event) error
 	return nil
 }
 
-//GetCount ...
+//GetCount - получить общее количество событий
 func (m *MemEventStorage) GetCount(ctx context.Context) (int, error) {
 	m.mux.Lock()
 	cnt := m.cnt
