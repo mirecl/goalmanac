@@ -10,5 +10,5 @@ import (
 type EventStorage interface {
 	Save(ctx context.Context, event *entities.Event) error
 	GetCount(ctx context.Context) (int, error)
-	//... далее продолжу
+	//... далее продолжу, когда будет реальная БД
 }
