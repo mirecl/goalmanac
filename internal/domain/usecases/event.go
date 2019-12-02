@@ -2,37 +2,27 @@ package usecases
 
 import (
 	"context"
-	"time"
 
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 	"github.com/mirecl/goalmanac/internal/domain/interfaces"
-	uuid "github.com/satori/go.uuid"
 )
 
 //EventUsecases - структура для работы со всем внешними источниками данных
 type EventUsecases struct {
-	db interfaces.EventStorage
+	Storage interfaces.EventStorage
 }
 
-//AddEvent - создание события в календаре
-func (event *EventUsecases) AddEvent(ctx context.Context, user, title, body string, startTime *time.Time, endTime *time.Time) error {
-	new := &entities.Event{
-		ID:        uuid.NewV4(),
-		User:      user,
-		Title:     title,
-		Body:      body,
-		StartTime: startTime,
-		EndTime:   endTime}
-
-	if err := event.db.Save(ctx, new); err != nil {
+//Add - создание события в календаре
+func (event *EventUsecases) Add(ctx context.Context, new *entities.Event) error {
+	if err := event.Storage.Save(ctx, new); err != nil {
 		return err
 	}
 	return nil
 }
 
-//GetCountEvent - получить число общее число событий
-func (event *EventUsecases) GetCountEvent(ctx context.Context) (*int, error) {
-	cnt, err := event.db.GetCount(ctx)
+//GetCount - получить число общее число событий
+func (event *EventUsecases) GetCount(ctx context.Context) (*int, error) {
+	cnt, err := event.Storage.GetCount(ctx)
 	if err != nil {
 		return nil, err
 	}
