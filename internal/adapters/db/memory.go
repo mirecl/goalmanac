@@ -7,7 +7,7 @@ import (
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 )
 
-//MemEventStorage ...
+//MemEventStorage - структура БД в памяти
 type MemEventStorage struct {
 	mux *sync.Mutex
 	db  []*entities.Event

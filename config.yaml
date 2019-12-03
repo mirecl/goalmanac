@@ -1,7 +1,11 @@
 http:
   host: 127.0.0.1
   port: 8800
-log:
-  level: info #(error / warn / info / debug)
-  path: info.log
+  shutdown: 5
+log_http:
+  level: info 
+  path: http.log
+log_event:
+  level: info
+  path: event.log
 
