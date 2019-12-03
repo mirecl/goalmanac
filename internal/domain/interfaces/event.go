@@ -15,6 +15,6 @@ type EventStorage interface {
 
 // EventLogger ...
 type EventLogger interface {
-	Error(args ...string)
-	Info(args ...string)
+	Errorf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
 }

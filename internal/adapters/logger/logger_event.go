@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -56,16 +55,14 @@ func NewLogEvent(logfile, level string) *LogEvent {
 	}
 }
 
-// Error ...
-func (log *LogEvent) Error(args ...string) {
-	msg := strings.Join(args, " ")
-	log.StdOut.Info(msg)
-	log.File.Info(msg)
+// Errorf ...
+func (log *LogEvent) Errorf(format string, args ...interface{}) {
+	log.StdOut.Infof(format, args...)
+	log.File.Infof(format, args...)
 }
 
-// Info ...
-func (log *LogEvent) Info(args ...string) {
-	msg := strings.Join(args, " ")
-	log.StdOut.Info(msg)
-	log.File.Info(msg)
+// Infof ...
+func (log *LogEvent) Infof(format string, args ...interface{}) {
+	log.StdOut.Infof(format, args...)
+	log.File.Infof(format, args...)
 }

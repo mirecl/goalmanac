@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -25,8 +26,9 @@ func (api *APIServerHTTP) Serve(host, port string) error {
 
 	srv := &http.Server{
 		Handler: r,
-		Addr:    host + ":" + port,
+		Addr:    fmt.Sprintf("%s:%s", host, port),
 	}
+
 	return srv.ListenAndServe()
 }
 
@@ -40,6 +42,6 @@ func (api *APIServerHTTP) logHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)
-		api.Logger.Info(r.RequestURI, r.Method, time.Since(start).String())
+		api.Logger.Infof("%s %s %s", r.RequestURI, r.Method, time.Since(start))
 	})
 }

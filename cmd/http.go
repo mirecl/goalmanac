@@ -25,21 +25,21 @@ func init() {
 
 // HTTPinit ...
 func HTTPinit(cmd *cobra.Command, args []string) error {
-	// Загружаем конфигурацию с файла c host+port
+	// Загружаем конфигурацию для запуска http-сервера
 	httpCfg := viper.GetStringMapString("http")
 	logCfg := viper.GetStringMapString("log")
 
-	// Проверям level
+	// считываем данные из config
 	level := logCfg["level"]
-	// Проверям path
 	path := logCfg["path"]
-	loggerEvent := logger.NewLogEvent(path, level)
-	loggerHTTP := logger.NewLogHTTP(path)
-
-	// Проверям host
 	host := httpCfg["host"]
-	// Проверям port
 	port := httpCfg["port"]
+
+	// Создаем logger для событий в Календаре
+	loggerEvent := logger.NewLogEvent(path, level)
+
+	// Создаем logger для событий в api http
+	loggerHTTP := logger.NewLogHTTP(path)
 
 	//Создаем инстанция БД в памяти
 	memdb, _ := db.NewMemStorage()
@@ -50,7 +50,7 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		Logger:  loggerEvent,
 	}
 
-	//Создаемп инстанцию  HTTP API
+	//Создаем инстанцию  HTTP API
 	server := &mux.APIServerHTTP{
 		Event:  use,
 		Logger: loggerHTTP,

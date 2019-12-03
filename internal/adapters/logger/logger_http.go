@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -44,18 +43,10 @@ func NewLogHTTP(logfile string) *LogHTTP {
 	}
 }
 
-// Error ...
-func (log *LogHTTP) Error(args ...string) {
-	msg := strings.Join(args, " ")
-	log.StdOut.Info(msg)
-	log.File.Info(msg)
-}
-
-// Info ...
-func (log *LogHTTP) Info(args ...string) {
-	msg := strings.Join(args, " ")
-	log.StdOut.Info(msg)
-	log.File.Info(msg)
+// Errorf ...
+func (log *LogHTTP) Errorf(format string, args ...interface{}) {
+	log.StdOut.Infof(format, args...)
+	log.File.Infof(format, args...)
 }
 
 // Infof ...
