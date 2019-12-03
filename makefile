@@ -1,2 +1,2 @@
 http:
-	go run main.go http
+	go run main.go http -c=config.yaml

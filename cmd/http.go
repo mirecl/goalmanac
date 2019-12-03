@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/mirecl/goalmanac/internal/adapters/db"
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
+	"github.com/mirecl/goalmanac/internal/adapters/logger"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -27,22 +25,21 @@ func init() {
 
 // HTTPinit ...
 func HTTPinit(cmd *cobra.Command, args []string) error {
-	// Загружаем конфигурацию с файла
-	cfg := viper.GetStringMapString("http_listen")
+	// Загружаем конфигурацию с файла c host+port
+	httpCfg := viper.GetStringMapString("http")
+	logCfg := viper.GetStringMapString("log")
+
+	// Проверям level
+	level := logCfg["level"]
+	// Проверям path
+	path := logCfg["path"]
+	loggerEvent := logger.NewLogEvent(path, level)
+	loggerHTTP := logger.NewLogHTTP(path)
 
 	// Проверям host
-	host, ok := cfg["ip"]
-	if !ok {
-		return errors.New("Укажите в config-файле переменную host")
-	}
-
+	host := httpCfg["host"]
 	// Проверям port
-	port, ok := cfg["port"]
-	if !ok {
-		return errors.New("Укажите в config-файле переменную port")
-	}
-
-	fmt.Printf("Starting http server on host %s:%s\n", host, port)
+	port := httpCfg["port"]
 
 	//Создаем инстанция БД в памяти
 	memdb, _ := db.NewMemStorage()
@@ -50,10 +47,13 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 	//Создаем интсанцию Бизнес-операцией с Календарем
 	use := &usecases.EventUsecases{
 		Storage: memdb,
+		Logger:  loggerEvent,
 	}
+
 	//Создаемп инстанцию  HTTP API
 	server := &mux.APIServerHTTP{
-		Event: use,
+		Event:  use,
+		Logger: loggerHTTP,
 	}
 	//Запускаем http-сервер
 	return server.Serve(host, port)

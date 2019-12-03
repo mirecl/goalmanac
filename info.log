@@ -1,0 +1,28 @@
+{"level":"info","msg":"Starting http server on 127.0.0.1:8800","time":"2019-12-03T09:04:19+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.332µs","time":"2019-12-03T09:04:21+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.895µs","time":"2019-12-03T09:04:21+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.603µs","time":"2019-12-03T09:04:22+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.364µs","time":"2019-12-03T09:04:22+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.687µs","time":"2019-12-03T09:04:22+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.301µs","time":"2019-12-03T09:04:22+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.212µs","time":"2019-12-03T09:04:22+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.149µs","time":"2019-12-03T09:04:23+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.179µs","time":"2019-12-03T09:04:23+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.179µs","time":"2019-12-03T09:04:23+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.637µs","time":"2019-12-03T09:04:23+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.144µs","time":"2019-12-03T09:04:31+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.53µs","time":"2019-12-03T09:04:32+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.812µs","time":"2019-12-03T09:04:32+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.713µs","time":"2019-12-03T09:04:32+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.888µs","time":"2019-12-03T09:04:32+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.236µs","time":"2019-12-03T09:04:32+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.566µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.189µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.156µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.781µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.975µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.207µs","time":"2019-12-03T09:04:33+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.553µs","time":"2019-12-03T09:04:34+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.704µs","time":"2019-12-03T09:04:34+03:00","type":"http"}
+{"level":"info","msg":"/hello GET 1.47µs","time":"2019-12-03T09:04:34+03:00","type":"http"}
+{"level":"info","msg":"Starting http server on 127.0.0.1:8800","time":"2019-12-03T09:05:37+03:00","type":"http"}

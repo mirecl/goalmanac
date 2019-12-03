@@ -40,6 +40,8 @@ func init() {
 func initConfig() {
 	// Use config file from the flag.
 	viper.SetConfigFile(cfgFile)
+	viper.SetDefault("log", map[string]string{"level": "info", "path": "info.log"})
+	viper.SetDefault("http", map[string]string{"host": "127.0.0.1", "port": "8080"})
 
 	// If a config file read
 	if err := viper.ReadInConfig(); err == nil {

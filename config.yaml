@@ -1,8 +1,7 @@
-# ip и port web-сервера
-http_listen:
-  ip: 127.0.0.1
+http:
+  host: 127.0.0.1
   port: 8800
-# уровень логирования (error / warn / info / debug)
-log_level: warn
-# путь к файлу логов
-log_file: warn
+log:
+  level: info #(error / warn / info / debug)
+  path: info.log
+

@@ -1,13 +1,8 @@
 package errors
 
-//EventError ...
-type EventError string
-
-func (ee EventError) Error() string {
-	return string(ee)
-}
-
 var (
-	//ErrDateBusy ...
-	ErrDateBusy = EventError("This Date is used")
+	// ErrSaveEvent ...
+	ErrSaveEvent = "Ошибка создания события в Календаре"
+	// ErrGetCount ...
+	ErrGetCount = "Ошибка получения общего числа события в каледаре"
 )
