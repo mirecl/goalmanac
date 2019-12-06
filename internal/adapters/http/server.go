@@ -44,8 +44,8 @@ func (api *APIServerHTTP) Serve() error {
 	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
 	// Устанавливаем handler для /api/update_event
 	r.HandleFunc("/api/update_event", api.updateHandler).Methods("POST")
-	// Устанавливаем handler для /api/event
-	r.HandleFunc("/api/event", api.allHandler).Methods("GET")
+	// Устанавливаем handler для /api/all_event
+	r.HandleFunc("/api/all_event", api.allHandler).Methods("GET")
 	// Устанавливаем Middleware для log
 	r.Use(api.logHandler)
 
