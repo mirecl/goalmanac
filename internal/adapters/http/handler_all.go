@@ -22,7 +22,7 @@ type ResAlldHTTPEventSuccess struct {
 func (api *APIServerHTTP) allHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := api.Event.GetAll(context.Background())
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(ResUpdHTTPEventBad{Error: err.Error()})
 		return
 	}

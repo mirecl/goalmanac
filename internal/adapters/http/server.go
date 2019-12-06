@@ -12,6 +12,7 @@ import (
 	"github.com/mirecl/goalmanac/internal/adapters"
 	"github.com/mirecl/goalmanac/internal/domain/interfaces"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
+	"github.com/rs/cors"
 )
 
 //APIServerHTTP - структура для http-сервера
@@ -50,9 +51,14 @@ func (api *APIServerHTTP) Serve() error {
 
 	api.Logger.Infof("Starting http server on %s:%s", host, port)
 
+	сrs := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"POST", "GET"},
+	})
+
 	// Создаем инстанцию http-сервера
 	srv := &http.Server{
-		Handler:      r,
+		Handler:      сrs.Handler(r),
 		Addr:         fmt.Sprintf("%s:%s", host, port),
 		WriteTimeout: writeTimeout * time.Second,
 		ReadTimeout:  readTimeout * time.Second,
