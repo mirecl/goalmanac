@@ -2,10 +2,12 @@ http:
   host: 127.0.0.1
   port: 8800
   shutdown: 5
+  writetimeout: 15
+  readtimeout: 15
 log_http:
-  level: info 
-  path: http.log
+  level: info
+  path: info.log
 log_event:
   level: info
-  path: event.log
+  path: info.log
 

@@ -6,36 +6,45 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/mirecl/goalmanac/internal/adapters"
 	"github.com/mirecl/goalmanac/internal/domain/interfaces"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
-	"github.com/spf13/viper"
 )
 
 //APIServerHTTP - структура для http-сервера
 type APIServerHTTP struct {
 	Event  *usecases.EventUsecases
 	Logger interfaces.HTTPLogger
-	Config *viper.Viper
+	Config *adapters.Config
 }
 
 //Serve ...
 func (api *APIServerHTTP) Serve() error {
 	// Загружаем конфигурацию для запуска http-сервера
-	httpCfg := api.Config.GetStringMapString("http")
-	host := httpCfg["host"]
-	port := httpCfg["port"]
-	wait, _ := strconv.Atoi(httpCfg["shutdown"])
+	host := api.Config.HTTP.Host
+	port := api.Config.HTTP.Port
+	wait := api.Config.HTTP.Shutdown
+	writeTimeout := api.Config.HTTP.WriteTimeout
+	readTimeout := api.Config.HTTP.ReadTimeout
 
 	// Создаем Route
 	r := mux.NewRouter()
 
-	// Устанавливаем handler ддля /hello
-	r.HandleFunc("/hello", api.helloHandler)
-
+	// Устанавливаем handler для /hello
+	r.HandleFunc("/hello", api.helloHandler).Methods("GET")
+	// Устанавливаем handler для /api/count_event
+	r.HandleFunc("/api/count_event", api.cntHandler).Methods("GET")
+	// Устанавливаем handler для /api/create_event
+	r.HandleFunc("/api/create_event", api.createHandler).Methods("POST")
+	// Устанавливаем handler для /api/create_event
+	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
+	// Устанавливаем handler для /api/update_event
+	r.HandleFunc("/api/update_event", api.updateHandler).Methods("POST")
+	// Устанавливаем handler для /api/event
+	r.HandleFunc("/api/event", api.allHandler).Methods("GET")
 	// Устанавливаем Middleware для log
 	r.Use(api.logHandler)
 
@@ -43,8 +52,10 @@ func (api *APIServerHTTP) Serve() error {
 
 	// Создаем инстанцию http-сервера
 	srv := &http.Server{
-		Handler: r,
-		Addr:    fmt.Sprintf("%s:%s", host, port),
+		Handler:      r,
+		Addr:         fmt.Sprintf("%s:%s", host, port),
+		WriteTimeout: writeTimeout * time.Second,
+		ReadTimeout:  readTimeout * time.Second,
 	}
 
 	// Запускаем http-сервер
@@ -60,7 +71,7 @@ func (api *APIServerHTTP) Serve() error {
 	<-c
 
 	// Graceful Shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(wait)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), wait*time.Second)
 	defer cancel()
 
 	srv.Shutdown(ctx)
@@ -72,13 +83,4 @@ func (api *APIServerHTTP) Serve() error {
 func (api *APIServerHTTP) helloHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Hello"))
-}
-
-// logHandler - handler для Middleware
-func (api *APIServerHTTP) logHandler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		next.ServeHTTP(w, r)
-		api.Logger.Infof("%s %s %s", r.RequestURI, r.Method, time.Since(start))
-	})
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // httpCmd represents the http command
@@ -25,21 +24,11 @@ func init() {
 
 // HTTPinit ...
 func HTTPinit(cmd *cobra.Command, args []string) error {
-	// Загружаем конфигурацию для log Event
-	logEventCfg := viper.GetStringMapString("log_event")
-	levelEvent := logEventCfg["level"]
-	pathEvent := logEventCfg["path"]
-
 	// Создаем logger для событий в Календаре
-	loggerEvent := logger.NewLogEvent(pathEvent, levelEvent)
-
-	// Загружаем конфигурацию для log HTTP
-	logHTTPCfg := viper.GetStringMapString("log_http")
-	levelHTTP := logHTTPCfg["level"]
-	pathHTTP := logHTTPCfg["path"]
+	loggerEvent := logger.NewLogEvent(&cfg)
 
 	// Создаем logger для событий в api http
-	loggerHTTP := logger.NewLogHTTP(pathHTTP, levelHTTP)
+	loggerHTTP := logger.NewLogHTTP(&cfg)
 
 	// Создаем инстанция БД в памяти
 	memdb, _ := db.NewMemStorage()
@@ -54,7 +43,7 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 	server := &mux.APIServerHTTP{
 		Event:  use,
 		Logger: loggerHTTP,
-		Config: viper.GetViper(),
+		Config: &cfg,
 	}
 	// Запускаем http-сервер
 	return server.Serve()

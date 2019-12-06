@@ -4,13 +4,16 @@ import (
 	"context"
 
 	"github.com/mirecl/goalmanac/internal/domain/entities"
+	uuid "github.com/satori/go.uuid"
 )
 
 // EventStorage - интерфейс для работы с событиями календаря
 type EventStorage interface {
 	Save(ctx context.Context, event *entities.Event) error
 	GetCount(ctx context.Context) (int, error)
-	//... далее продолжу, когда будет реальная БД
+	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, event *entities.Event) error
+	GetAll(ctx context.Context) ([]*entities.Event, error)
 }
 
 // EventLogger ...

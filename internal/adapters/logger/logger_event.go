@@ -3,6 +3,7 @@ package logger
 import (
 	"os"
 
+	"github.com/mirecl/goalmanac/internal/adapters"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -13,7 +14,7 @@ type LogEvent struct {
 }
 
 // NewLogEvent - создаем инстанцию
-func NewLogEvent(logfile, level string) *LogEvent {
+func NewLogEvent(cfg *adapters.Config) *LogEvent {
 	// Создаем инстанция для logger'a в Stdout
 	loggerStdOut := log.New()
 	// Настройки отображения
@@ -27,16 +28,12 @@ func NewLogEvent(logfile, level string) *LogEvent {
 	loggerStdOut.SetOutput(os.Stdout)
 
 	// Указываем уровень логирования для Stdout
-	switch level {
-	case "info":
-		loggerStdOut.SetLevel(log.InfoLevel)
-	case "debug":
-		loggerStdOut.SetLevel(log.DebugLevel)
-	case "warn":
-		loggerStdOut.SetLevel(log.WarnLevel)
-	case "error":
-		loggerStdOut.SetLevel(log.ErrorLevel)
+	logLevel, err := log.ParseLevel(cfg.LogHTTP.Level)
+	if err != nil {
+		log.WithFields(log.Fields{"type": "loggerEvent"}).Errorln(err.Error())
+		os.Exit(0)
 	}
+	loggerStdOut.SetLevel(logLevel)
 
 	// Создаем инстанция для logger'a в file
 	loggerFile := log.New()
@@ -48,9 +45,10 @@ func NewLogEvent(logfile, level string) *LogEvent {
 	loggerFile.SetLevel(log.InfoLevel)
 
 	// Создаем/открываем файл для логирвания
-	logFile, err := os.OpenFile(logfile, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	logFile, err := os.OpenFile(cfg.LogHTTP.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
-
+		log.WithFields(log.Fields{"type": "loggerEvent"}).Errorln(err.Error())
+		os.Exit(0)
 	}
 
 	// Указываем вывод в file
@@ -68,8 +66,8 @@ func NewLogEvent(logfile, level string) *LogEvent {
 
 // Errorf - вывод ошибок
 func (log *LogEvent) Errorf(format string, args ...interface{}) {
-	log.StdOut.Infof(format, args...)
-	log.File.Infof(format, args...)
+	log.StdOut.Errorf(format, args...)
+	log.File.Errorf(format, args...)
 }
 
 // Infof - вывод информации
