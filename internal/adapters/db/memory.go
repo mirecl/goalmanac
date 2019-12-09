@@ -48,7 +48,8 @@ func (m *MemEventStorage) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 	for i, event := range m.db {
 		if event.ID == id {
-			m.db = append(m.db[:1], m.db[i+1:]...)
+			m.db[i] = m.db[m.cnt-1]
+			m.db = m.db[:m.cnt-1]
 			m.cnt--
 			return nil
 		}
@@ -76,8 +77,5 @@ func (m *MemEventStorage) Update(ctx context.Context, e *entities.Event) error {
 func (m *MemEventStorage) GetAll(ctx context.Context) ([]*entities.Event, error) {
 	m.mux.Lock()
 	defer m.mux.Unlock()
-	if m.cnt == 0 {
-		return nil, errors.New("Not Found Data")
-	}
 	return m.db, nil
 }

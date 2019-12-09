@@ -4,15 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 	uuid "github.com/satori/go.uuid"
 )
-
-// ResUpdHTTPEventBad ...
-type ResUpdHTTPEventBad struct {
-	Error string `json:"error"`
-}
 
 // ResUpdHTTPEventSuccess ...
 type ResUpdHTTPEventSuccess struct {
@@ -32,24 +28,44 @@ type ReqUpdHTTPEvent struct {
 // updateHandler - handler для пути /api/update_event
 func (api *APIServerHTTP) updateHandler(w http.ResponseWriter, r *http.Request) {
 	var req ReqUpdHTTPEvent
+
+	// Считываем входящие данные
 	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
+		return
+	}
+
+	// Конвертируем время начала события
+	startTime, err := api.Helper.time.Parse(req.StartTime)
+	if err != nil {
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
+		return
+	}
+
+	// Определяем время окончания события
+	timeEvent, err := time.ParseDuration(req.Duration)
+	if err != nil {
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
+		return
+	}
+	endTime := startTime.Add(timeEvent)
+
 	changeEvent := &entities.Event{
 		ID:        req.ID,
 		User:      req.User,
 		Title:     req.Title,
 		Body:      req.Body,
-		StartTime: nil,
-		EndTime:   nil}
-	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResDelHTTPEventBad{Error: err.Error()})
-		return
-	}
+		StartTime: &startTime,
+		EndTime:   &endTime}
+
 	err = api.Event.Update(context.Background(), changeEvent)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResUpdHTTPEventBad{Error: err.Error()})
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)

@@ -8,11 +8,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// ResDelHTTPEventBad ...
-type ResDelHTTPEventBad struct {
-	Error string `json:"error"`
-}
-
 // ResDelHTTPEventSuccess ...
 type ResDelHTTPEventSuccess struct {
 	Result string `json:"result"`
@@ -28,15 +23,14 @@ func (api *APIServerHTTP) deleteHandler(w http.ResponseWriter, r *http.Request) 
 	var req ReqDelHTTPEvent
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
+		Error(w, err, http.StatusBadRequest)
 		api.Logger.Errorf("%s", err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResDelHTTPEventBad{Error: err.Error()})
 		return
 	}
 	err = api.Event.Delete(context.Background(), req.ID)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(ResDelHTTPEventBad{Error: err.Error()})
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)

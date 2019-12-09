@@ -14,7 +14,8 @@ type cntHTTPEvent struct {
 func (api *APIServerHTTP) cntHandler(w http.ResponseWriter, r *http.Request) {
 	cnt, err := api.Event.GetCount(context.Background())
 	if err != nil {
-		api.Logger.Errorf("%s", err)
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

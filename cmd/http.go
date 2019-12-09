@@ -5,6 +5,7 @@ import (
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -39,11 +40,19 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		Logger:  loggerEvent,
 	}
 
+	// Создаем helper для HTTP
+	var helper mux.HelperHTTP
+	err := mux.CreateHelperHTTP(&helper)
+	if err != nil {
+		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+	}
+
 	// Создаем инстанцию HTTP API
 	server := &mux.APIServerHTTP{
 		Event:  use,
 		Logger: loggerHTTP,
 		Config: &cfg,
+		Helper: &helper,
 	}
 	// Запускаем http-сервер
 	return server.Serve()

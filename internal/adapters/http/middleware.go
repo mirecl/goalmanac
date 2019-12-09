@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var re = regexp.MustCompile(`([2]0[0-9])`)
+var re = regexp.MustCompile(`([2-3]0[0-9])`)
 
 type responseObserver struct {
 	http.ResponseWriter

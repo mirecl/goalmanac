@@ -8,11 +8,6 @@ import (
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 )
 
-// ResAllHTTPEventBad ...
-type ResAllHTTPEventBad struct {
-	Error string `json:"error"`
-}
-
 // ResAlldHTTPEventSuccess ...
 type ResAlldHTTPEventSuccess struct {
 	Result []*entities.Event `json:"result"`
@@ -22,8 +17,8 @@ type ResAlldHTTPEventSuccess struct {
 func (api *APIServerHTTP) allHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := api.Event.GetAll(context.Background())
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(ResUpdHTTPEventBad{Error: err.Error()})
+		Error(w, err, http.StatusBadRequest)
+		api.Logger.Errorf("%s", err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
