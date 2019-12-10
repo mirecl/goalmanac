@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Событие",
+  "description": "Создание события в Календаре",
+  "type": "object",
+  "properties": {
+    "user": {
+      "description": "Пользователь",
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "description": "Заголовок события",
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "description": "Описание события",
+      "type": "string",
+      "minLength": 1
+    },
+    "start": {
+      "description": "Время старта события",
+      "type": "string",
+      "format": "date-time",
+      "minLength": 1
+    },
+    "duration": {
+      "description": "Продолжительность события",
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "10m",
+        "20m",
+        "30m",
+        "40m",
+        "50m",
+        "60m"
+      ]
+    }
+  },
+  "required": [
+    "user",
+    "title",
+    "body",
+    "start",
+    "duration"
+  ]
+}
