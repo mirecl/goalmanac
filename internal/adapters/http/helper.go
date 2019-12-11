@@ -34,7 +34,7 @@ type badHTTP struct {
 }
 
 // Error ...
-func Error(w http.ResponseWriter, err error, code int) {
+func (h *HelperHTTP) Error(w http.ResponseWriter, err error, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)

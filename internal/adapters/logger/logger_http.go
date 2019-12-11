@@ -2,6 +2,7 @@ package logger
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/mirecl/goalmanac/internal/adapters"
 	log "github.com/sirupsen/logrus"
@@ -64,13 +65,17 @@ func NewLogHTTP(cfg *adapters.Config) *LogHTTP {
 }
 
 // Errorf - вывод ошибок
-func (log *LogHTTP) Errorf(format string, args ...interface{}) {
-	log.StdOut.Errorf(format, args...)
-	log.File.Errorf(format, args...)
+func (l *LogHTTP) Errorf(format string, args ...interface{}) {
+	pc := make([]uintptr, 10) // at least 1 entry needed
+	runtime.Callers(2, pc)
+	f := runtime.FuncForPC(pc[0])
+	file, line := f.FileLine(pc[0])
+	l.StdOut.WithFields(log.Fields{"func": file, "line": line}).Errorf(format, args...)
+	l.File.WithFields(log.Fields{"func": file, "line": line}).Errorf(format, args...)
 }
 
 // Infof - вывод информации
-func (log *LogHTTP) Infof(format string, args ...interface{}) {
-	log.StdOut.Infof(format, args...)
-	log.File.Infof(format, args...)
+func (l *LogHTTP) Infof(format string, args ...interface{}) {
+	l.StdOut.Infof(format, args...)
+	l.File.Infof(format, args...)
 }

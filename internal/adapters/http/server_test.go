@@ -63,7 +63,7 @@ func createAPI() APIServerHTTP {
 	adapters.CreateConfig(path, &cfg)
 
 	// Создаем logger для событий в Календаре
-	loggerEvent := logger.NewLogEvent(&cfg)
+	loggerEvent, _ := logger.NewLogEvent(&cfg)
 
 	// Создаем logger для событий в api http
 	loggerHTTP := logger.NewLogHTTP(&cfg)

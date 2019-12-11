@@ -5,7 +5,6 @@ import (
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +13,7 @@ var httpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "Запуск http-сервера",
 	Long: `Запуск http-сервера. За основу взят пакет https://github.com/gorilla/mux.
-В конфигурациоонм файле должны быть указану ip и port.`,
+В конфигурациоонм файле должны быть указану host и port.`,
 	SilenceUsage: true,
 	RunE:         HTTPinit,
 }
@@ -26,13 +25,19 @@ func init() {
 // HTTPinit ...
 func HTTPinit(cmd *cobra.Command, args []string) error {
 	// Создаем logger для событий в Календаре
-	loggerEvent := logger.NewLogEvent(&cfg)
+	loggerEvent, err := logger.NewLogEvent(&cfg)
+	if err != nil {
+		return err
+	}
 
 	// Создаем logger для событий в api http
 	loggerHTTP := logger.NewLogHTTP(&cfg)
 
 	// Создаем инстанция БД в памяти
-	memdb, _ := db.NewMemStorage()
+	memdb, err := db.NewMemStorage()
+	if err != nil {
+		return err
+	}
 
 	// Создаем интсанцию Бизнес-операцией с Календарем
 	use := &usecases.EventUsecases{
@@ -42,9 +47,10 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 
 	// Создаем helper для HTTP
 	var helper mux.HelperHTTP
-	err := mux.CreateHelperHTTP(&helper)
+	err = mux.CreateHelperHTTP(&helper)
 	if err != nil {
-		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+		return err
+		// log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
 	}
 
 	// Создаем инстанцию HTTP API

@@ -23,14 +23,14 @@ func (api *APIServerHTTP) deleteHandler(w http.ResponseWriter, r *http.Request) 
 	var req ReqDelHTTPEvent
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		Error(w, err, http.StatusBadRequest)
 		api.Logger.Errorf("%s", err.Error())
+		api.Helper.Error(w, err, http.StatusBadRequest)
 		return
 	}
 	err = api.Event.Delete(context.Background(), req.ID)
 	if err != nil {
-		Error(w, err, http.StatusBadRequest)
 		api.Logger.Errorf("%s", err.Error())
+		api.Helper.Error(w, err, http.StatusBadRequest)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
