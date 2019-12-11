@@ -60,7 +60,7 @@ func (api *APIServerHTTP) createHandler(w http.ResponseWriter, r *http.Request) 
 		StartTime: &startTime,
 		EndTime:   &endTime}
 
-	// Сохраняем события
+	// Сохраняем событие
 	err = api.Event.Add(context.Background(), new)
 	if err != nil {
 		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Event.Add", err), http.StatusBadRequest)

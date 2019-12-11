@@ -33,6 +33,7 @@ func init() {
 func initConfig() {
 	err := adapters.CreateConfig(cfgFile, &cfg)
 	if err != nil {
+		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
 		os.Exit(0)
 	}
 }

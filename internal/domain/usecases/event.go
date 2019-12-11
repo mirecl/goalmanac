@@ -2,6 +2,8 @@ package usecases
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 	"github.com/mirecl/goalmanac/internal/domain/errors"
@@ -17,8 +19,13 @@ type EventUsecases struct {
 
 // Add - создание события в календаре
 func (event *EventUsecases) Add(ctx context.Context, new *entities.Event) error {
+	t := time.Now()
+	if new.StartTime.Before(t) {
+		event.Logger.Errorf("%s %s", new.StartTime)
+		return fmt.Errorf("%s %s", errors.ErrAfterDay, new.StartTime)
+	}
 	if err := event.Storage.Save(ctx, new); err != nil {
-		event.Logger.Errorf("%s: %s", errors.ErrSaveEvent, err)
+		event.Logger.Errorf("%s %s", errors.ErrSaveEvent, err)
 		return err
 	}
 	return nil

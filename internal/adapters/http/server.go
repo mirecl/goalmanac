@@ -103,7 +103,7 @@ func (api *APIServerHTTP) Serve() error {
 	// Запускаем http-сервер
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			api.Logger.Errorf("%s", err)
+			api.Logger.Errorf("Ошибка в функции %s %s", "ListenAndServe", err)
 		}
 	}()
 

@@ -39,7 +39,7 @@ func CreateHelperHTTP(cfg *HelperHTTP) error {
 	cfg.time = &now.Config{
 		WeekStartDay: time.Monday,
 		TimeLocation: location,
-		TimeFormats:  []string{"02.01.2006, 15:04:05"},
+		TimeFormats:  []string{"2006-01-02T15:04:00.000Z"},
 	}
 
 	return nil

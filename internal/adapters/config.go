@@ -40,7 +40,7 @@ type Config struct {
 func CreateConfig(file string, cfg *Config) error {
 	// Проверка файла конфигурации
 	if _, err := os.Stat(file); os.IsNotExist(err) {
-		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+		log.WithFields(log.Fields{"type": "cmd"}).Warningln(err.Error())
 	}
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(file)
@@ -69,7 +69,6 @@ func CreateConfig(file string, cfg *Config) error {
 
 	err := viper.Unmarshal(&cfg)
 	if err != nil {
-		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
 		return err
 	}
 	return nil
