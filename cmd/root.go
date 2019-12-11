@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/mirecl/goalmanac/internal/adapters"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +18,10 @@ var rootCmd = &cobra.Command{
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 func Execute() {
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+		os.Exit(0)
+	}
 }
 
 func init() {

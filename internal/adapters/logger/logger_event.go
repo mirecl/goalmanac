@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"runtime"
 
 	"github.com/mirecl/goalmanac/internal/adapters"
 	log "github.com/sirupsen/logrus"
@@ -29,7 +28,7 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 	loggerStdOut.SetOutput(os.Stdout)
 
 	// Указываем уровень логирования для Stdout
-	logLevel, err := log.ParseLevel(cfg.LogHTTP.Level)
+	logLevel, err := log.ParseLevel(cfg.LogEVENT.Level)
 	if err != nil {
 		return nil, err
 		// log.WithFields(log.Fields{"type": "loggerEvent"}).Errorln(err.Error())
@@ -50,8 +49,6 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 	logFile, err := os.OpenFile(cfg.LogHTTP.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
 		return nil, err
-		// log.WithFields(log.Fields{"type": "loggerEvent"}).Errorln(err.Error())
-		// os.Exit(0)
 	}
 
 	// Указываем вывод в file
@@ -69,12 +66,8 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 
 // Errorf - вывод ошибок
 func (l *LogEvent) Errorf(format string, args ...interface{}) {
-	pc := make([]uintptr, 10)
-	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	file, line := f.FileLine(pc[0])
-	l.StdOut.WithFields(log.Fields{"func": f.Name(), "line": line}).Errorf(format, args...)
-	l.File.WithFields(log.Fields{"func": file, "line": line}).Errorf(format, args...)
+	l.StdOut.Errorf(format, args...)
+	l.File.Errorf(format, args...)
 }
 
 // Infof - вывод информации

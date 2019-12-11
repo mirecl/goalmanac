@@ -68,7 +68,7 @@ func (api *APIServerHTTP) Serve() error {
 	// Устанавливаем handler для /api/count_event
 	r.HandleFunc("/api/count_event", api.cntHandler).Methods("GET")
 	// Устанавливаем handler для /api/create_event
-	r.HandleFunc("/api/create_event", api.createHandler).Methods("POST")
+	r.HandleFunc("/api/create_event", api.validateHandlerCreate(api.createHandler)).Methods("POST")
 	// Устанавливаем handler для /api/create_event
 	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
 	// Устанавливаем handler для /api/update_event

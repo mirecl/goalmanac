@@ -66,7 +66,7 @@ func createAPI() APIServerHTTP {
 	loggerEvent, _ := logger.NewLogEvent(&cfg)
 
 	// Создаем logger для событий в api http
-	loggerHTTP := logger.NewLogHTTP(&cfg)
+	loggerHTTP, _ := logger.NewLogHTTP(&cfg)
 
 	// Создаем инстанция БД в памяти
 	memdb, _ := db.NewMemStorage()

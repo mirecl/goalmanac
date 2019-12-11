@@ -2,7 +2,6 @@ package logger
 
 import (
 	"os"
-	"runtime"
 
 	"github.com/mirecl/goalmanac/internal/adapters"
 	log "github.com/sirupsen/logrus"
@@ -15,7 +14,7 @@ type LogHTTP struct {
 }
 
 // NewLogHTTP - создаем инстанцию
-func NewLogHTTP(cfg *adapters.Config) *LogHTTP {
+func NewLogHTTP(cfg *adapters.Config) (*LogHTTP, error) {
 	// Создаем инстанция для logger'a в Stdout
 	loggerStdOut := log.New()
 	// Настройки отображения
@@ -29,10 +28,9 @@ func NewLogHTTP(cfg *adapters.Config) *LogHTTP {
 	loggerStdOut.SetOutput(os.Stdout)
 
 	// Указываем уровень логирования для Stdout
-	logLevel, err := log.ParseLevel(cfg.LogEVENT.Level)
+	logLevel, err := log.ParseLevel(cfg.LogHTTP.Level)
 	if err != nil {
-		log.WithFields(log.Fields{"type": "loggerHTTP"}).Errorln(err.Error())
-		os.Exit(0)
+		return nil, err
 	}
 	loggerStdOut.SetLevel(logLevel)
 
@@ -48,8 +46,7 @@ func NewLogHTTP(cfg *adapters.Config) *LogHTTP {
 	// Создаем/открываем файл для логирвания
 	logFile, err := os.OpenFile(cfg.LogEVENT.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
-		log.WithFields(log.Fields{"type": "loggerHTTP"}).Errorln(err.Error())
-		os.Exit(0)
+		return nil, err
 	}
 	// Указываем вывод в file
 	loggerFile.SetOutput(logFile)
@@ -61,17 +58,13 @@ func NewLogHTTP(cfg *adapters.Config) *LogHTTP {
 		File: loggerFile.WithFields(log.Fields{
 			"type": "http",
 		}),
-	}
+	}, nil
 }
 
 // Errorf - вывод ошибок
 func (l *LogHTTP) Errorf(format string, args ...interface{}) {
-	pc := make([]uintptr, 10) // at least 1 entry needed
-	runtime.Callers(2, pc)
-	f := runtime.FuncForPC(pc[0])
-	file, line := f.FileLine(pc[0])
-	l.StdOut.WithFields(log.Fields{"func": file, "line": line}).Errorf(format, args...)
-	l.File.WithFields(log.Fields{"func": file, "line": line}).Errorf(format, args...)
+	l.StdOut.Errorf(format, args...)
+	l.File.Errorf(format, args...)
 }
 
 // Infof - вывод информации

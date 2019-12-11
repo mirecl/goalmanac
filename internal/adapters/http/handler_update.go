@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -32,24 +33,21 @@ func (api *APIServerHTTP) updateHandler(w http.ResponseWriter, r *http.Request) 
 	// Считываем входящие данные
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "json.NewDecoder", err), http.StatusBadRequest)
 		return
 	}
 
 	// Конвертируем время начала события
 	startTime, err := api.Helper.time.Parse(req.StartTime)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Helper.time.Parse", err), http.StatusBadRequest)
 		return
 	}
 
 	// Определяем время окончания события
 	timeEvent, err := time.ParseDuration(req.Duration)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "time.ParseDuration", err), http.StatusBadRequest)
 		return
 	}
 	endTime := startTime.Add(timeEvent)
@@ -64,8 +62,7 @@ func (api *APIServerHTTP) updateHandler(w http.ResponseWriter, r *http.Request) 
 
 	err = api.Event.Update(context.Background(), changeEvent)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Event.Update", err), http.StatusBadRequest)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

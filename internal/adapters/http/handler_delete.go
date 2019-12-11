@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
@@ -23,14 +24,12 @@ func (api *APIServerHTTP) deleteHandler(w http.ResponseWriter, r *http.Request) 
 	var req ReqDelHTTPEvent
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "json.NewDecoder", err), http.StatusBadRequest)
 		return
 	}
 	err = api.Event.Delete(context.Background(), req.ID)
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Event.Delete", err), http.StatusBadRequest)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

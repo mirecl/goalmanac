@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -14,8 +15,7 @@ type cntHTTPEvent struct {
 func (api *APIServerHTTP) cntHandler(w http.ResponseWriter, r *http.Request) {
 	cnt, err := api.Event.GetCount(context.Background())
 	if err != nil {
-		api.Logger.Errorf("%s", err.Error())
-		api.Helper.Error(w, err, http.StatusBadRequest)
+		api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Event.GetCount", err), http.StatusBadRequest)
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

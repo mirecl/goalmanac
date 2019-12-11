@@ -1,6 +1,9 @@
 package http
 
 import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -45,5 +48,31 @@ func (api *APIServerHTTP) logHandler(next http.Handler) http.Handler {
 		} else {
 			api.Logger.Errorf("%s %s %s %d", r.RequestURI, r.Method, time.Since(start), o.status)
 		}
+	})
+}
+
+// validateHandlerCreate - handler для Middleware
+func (api *APIServerHTTP) validateHandlerCreate(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "ioutil.ReadAll", err), http.StatusBadRequest)
+			return
+		}
+		result, err := api.Helper.validateCreate(body)
+		if err != nil {
+			api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Helper.validateCreate", err), http.StatusBadRequest)
+			return
+		}
+		if !result.Valid() {
+			err = fmt.Errorf("Ошибка валидации данных в коде: %s)", GetFunc())
+			for _, errD := range result.Errors() {
+				err = fmt.Errorf("%s: %s %s %w", errD.Field(), errD.Description(), GetFunc(), err)
+			}
+			api.Error(w, err, http.StatusBadRequest)
+			return
+		}
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		next(w, r)
 	})
 }
