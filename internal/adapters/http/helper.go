@@ -17,6 +17,7 @@ import (
 type HelperHTTP struct {
 	time         *now.Config
 	schemaCreate gojsonschema.JSONLoader
+	schemaChange gojsonschema.JSONLoader
 }
 
 // CreateHelperHTTP ...
@@ -49,7 +50,7 @@ func (h *HelperHTTP) validateCreate(body []byte) (*gojsonschema.Result, error) {
 	loader := gojsonschema.NewBytesLoader(body)
 	result, err := gojsonschema.Validate(h.schemaCreate, loader)
 	if err != nil {
-		return nil, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "gojsonschema.Validate", err)
+		return nil, fmt.Errorf("%s", err)
 	}
 	return result, nil
 }
@@ -59,12 +60,12 @@ type badHTTP struct {
 }
 
 // Error ...
-func (api *APIServerHTTP) Error(w http.ResponseWriter, err error, code int) {
+func (api *APIServerHTTP) Error(w http.ResponseWriter, err error, code int, path string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(badHTTP{Error: err.Error()})
-	api.Logger.Errorf("%s", err.Error())
+	api.Logger.Errorf(&code, path, "%s", err.Error())
 }
 
 // GetFunc ...

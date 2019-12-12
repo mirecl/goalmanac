@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mirecl/goalmanac/internal/adapters"
+	v "github.com/mirecl/goalmanac/internal/adapters/http/validate"
 	"github.com/mirecl/goalmanac/internal/domain/interfaces"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
 	"github.com/rs/cors"
@@ -68,11 +69,11 @@ func (api *APIServerHTTP) Serve() error {
 	// Устанавливаем handler для /api/count_event
 	r.HandleFunc("/api/count_event", api.cntHandler).Methods("GET")
 	// Устанавливаем handler для /api/create_event
-	r.HandleFunc("/api/create_event", api.validateHandlerCreate(api.createHandler)).Methods("POST")
+	r.HandleFunc("/api/create_event", api.validateHandler(api.createHandler, v.Create)).Methods("POST")
 	// Устанавливаем handler для /api/create_event
 	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
 	// Устанавливаем handler для /api/update_event
-	r.HandleFunc("/api/update_event", api.updateHandler).Methods("POST")
+	r.HandleFunc("/api/update_event", api.validateHandler(api.updateHandler, v.Change)).Methods("POST")
 	// Устанавливаем handler для /api/all_event
 	r.HandleFunc("/api/all_event", api.allHandler).Methods("GET")
 	// Устанавливаем Middleware для log
@@ -85,7 +86,7 @@ func (api *APIServerHTTP) Serve() error {
 	}
 	r.PathPrefix("/").Handler(spa)
 
-	api.Logger.Infof("Starting http server on %s:%s", host, port)
+	api.Logger.Infof(nil, "Starting http server on %s:%s", host, port)
 
 	сrs := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -103,7 +104,7 @@ func (api *APIServerHTTP) Serve() error {
 	// Запускаем http-сервер
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			api.Logger.Errorf("Ошибка в функции %s %s", "ListenAndServe", err)
+			api.Logger.Errorf(nil, "Ошибка в функции %s %s", "ListenAndServe", err)
 		}
 	}()
 
@@ -117,7 +118,7 @@ func (api *APIServerHTTP) Serve() error {
 	defer cancel()
 
 	srv.Shutdown(ctx)
-	api.Logger.Infof("%s", "shutting down")
+	api.Logger.Infof(nil, "%s", "shutting down")
 	return nil
 }
 

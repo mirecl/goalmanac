@@ -62,13 +62,23 @@ func NewLogHTTP(cfg *adapters.Config) (*LogHTTP, error) {
 }
 
 // Errorf - вывод ошибок
-func (l *LogHTTP) Errorf(format string, args ...interface{}) {
-	l.StdOut.Errorf(format, args...)
-	l.File.Errorf(format, args...)
+func (l *LogHTTP) Errorf(code *int, path, format string, args ...interface{}) {
+	if code == nil {
+		l.StdOut.WithFields(log.Fields{"func": path}).Errorf(format, args...)
+		l.File.WithFields(log.Fields{"func": path}).Errorf(format, args...)
+		return
+	}
+	l.StdOut.WithFields(log.Fields{"func": path, "code": *code}).Errorf(format, args...)
+	l.File.WithFields(log.Fields{"func": path, "code": *code}).Errorf(format, args...)
 }
 
 // Infof - вывод информации
-func (l *LogHTTP) Infof(format string, args ...interface{}) {
-	l.StdOut.Infof(format, args...)
-	l.File.Infof(format, args...)
+func (l *LogHTTP) Infof(code *int, format string, args ...interface{}) {
+	if code == nil {
+		l.StdOut.Infof(format, args...)
+		l.File.Infof(format, args...)
+		return
+	}
+	l.StdOut.WithFields(log.Fields{"code": *code}).Infof(format, args...)
+	l.File.WithFields(log.Fields{"code": *code}).Infof(format, args...)
 }

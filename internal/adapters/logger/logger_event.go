@@ -65,9 +65,9 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 }
 
 // Errorf - вывод ошибок
-func (l *LogEvent) Errorf(format string, args ...interface{}) {
-	l.StdOut.Errorf(format, args...)
-	l.File.Errorf(format, args...)
+func (l *LogEvent) Errorf(path, format string, args ...interface{}) {
+	l.StdOut.WithFields(log.Fields{"func": path}).Errorf(format, args...)
+	l.File.WithFields(log.Fields{"func": path}).Errorf(format, args...)
 }
 
 // Infof - вывод информации

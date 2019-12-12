@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/mirecl/goalmanac/internal/adapters/http/validate"
 )
 
 var re = regexp.MustCompile(`([2-3]0[0-9])`)
@@ -44,32 +46,39 @@ func (api *APIServerHTTP) logHandler(next http.Handler) http.Handler {
 		o := &responseObserver{ResponseWriter: w}
 		next.ServeHTTP(o, r)
 		if re.MatchString(strconv.Itoa(o.status)) {
-			api.Logger.Infof("%s %s %s %d", r.RequestURI, r.Method, time.Since(start), o.status)
+			api.Logger.Infof(&o.status, "%s %s %s", r.RequestURI, r.Method, time.Since(start))
 		} else {
-			api.Logger.Errorf("%s %s %s %d", r.RequestURI, r.Method, time.Since(start), o.status)
+			api.Logger.Errorf(&o.status, GetFunc(), "%s %s %s", r.RequestURI, r.Method, time.Since(start))
 		}
 	})
 }
 
-// validateHandlerCreate - handler для Middleware
-func (api *APIServerHTTP) validateHandlerCreate(next http.HandlerFunc) http.HandlerFunc {
+// validateHandler - handler для Middleware
+func (api *APIServerHTTP) validateHandler(next http.HandlerFunc, a validate.Validater) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Чтение входных параметров
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "ioutil.ReadAll", err), http.StatusBadRequest)
+			api.Error(w, err, http.StatusBadRequest, GetFunc())
 			return
 		}
-		result, err := api.Helper.validateCreate(body)
+		// Валидация данных
+		result, err := a.Validate(body)
 		if err != nil {
-			api.Error(w, fmt.Errorf("Error in %s (%s) %w", GetFunc(), "api.Helper.validateCreate", err), http.StatusBadRequest)
+			api.Error(w, err, http.StatusBadRequest, GetFunc())
 			return
 		}
+		// Формирование ответа
 		if !result.Valid() {
-			err = fmt.Errorf("Ошибка валидации данных в коде: %s)", GetFunc())
+			var errS error
 			for _, errD := range result.Errors() {
-				err = fmt.Errorf("%s: %s %s %w", errD.Field(), errD.Description(), GetFunc(), err)
+				if errS == nil {
+					errS = fmt.Errorf("%s: %s", errD.Field(), errD.Description())
+					continue
+				}
+				errS = fmt.Errorf("%s: %s  %w", errD.Field(), errD.Description(), errS)
 			}
-			api.Error(w, err, http.StatusBadRequest)
+			api.Error(w, errS, http.StatusBadRequest, GetFunc())
 			return
 		}
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
