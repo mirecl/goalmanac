@@ -15,11 +15,24 @@ func TestSave(t *testing.T) {
 	start := time.Now()
 	end := time.Now()
 	event := &entities.Event{ID: uuid.NewV4(), User: "Grazhdankov", Title: "Golang", Body: "Tutorial and  big test", StartTime: &start, EndTime: &end}
-	memdb, _ := NewMemStorage()
+
+	memdb, err := NewMemStorage()
+	require.NoError(t, err)
+
 	for i := 0; i < 20; i++ {
 		memdb.Save(context.Background(), event)
 	}
 
 	cnt, _ := memdb.GetCount(context.Background())
 	require.Equal(t, cnt, 20)
+}
+
+func TestAll(t *testing.T) {
+	memdb, err := NewMemStorage()
+	require.NoError(t, err)
+
+	events, err := memdb.GetAll(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, len(events), 0)
 }

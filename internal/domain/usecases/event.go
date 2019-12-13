@@ -23,7 +23,7 @@ func (event *EventUsecases) Add(ctx context.Context, new *entities.Event) error 
 	t := time.Now()
 	if new.StartTime.Before(t) {
 		event.Logger.Errorf(domain.GetFunc(), "%s %s", errors.ErrAfterDay, new.StartTime)
-		return fmt.Errorf("%s %s", errors.ErrAfterDay, new.StartTime)
+		return fmt.Errorf("%s", errors.ErrAfterDay)
 	}
 	if err := event.Storage.Save(ctx, new); err != nil {
 		event.Logger.Errorf("%s %s", errors.ErrSaveEvent, err)

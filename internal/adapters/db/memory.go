@@ -2,8 +2,6 @@ package db
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/mirecl/goalmanac/internal/domain/entities"
@@ -44,7 +42,7 @@ func (m *MemEventStorage) Delete(ctx context.Context, id uuid.UUID) error {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 	if m.cnt == 0 {
-		return errors.New("No Data for Delete")
+		return ErrNotFoundDelete
 	}
 	for i, event := range m.db {
 		if event.ID == id {
@@ -54,7 +52,7 @@ func (m *MemEventStorage) Delete(ctx context.Context, id uuid.UUID) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Not Found Event: %s for Delete", id)
+	return ErrNotFoundDelete
 }
 
 // Update ...
@@ -62,7 +60,7 @@ func (m *MemEventStorage) Update(ctx context.Context, e *entities.Event) error {
 	m.mux.Lock()
 	defer m.mux.Unlock()
 	if m.cnt == 0 {
-		return fmt.Errorf("No Data Event: %s for Update", e.ID)
+		return ErrNotFoundUpdate
 	}
 	for i, event := range m.db {
 		if event.ID == e.ID {
@@ -70,7 +68,7 @@ func (m *MemEventStorage) Update(ctx context.Context, e *entities.Event) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Not Found Event: %s for Update", e.ID)
+	return ErrNotFoundUpdate
 }
 
 // GetAll ...

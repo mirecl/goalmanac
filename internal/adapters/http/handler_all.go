@@ -17,7 +17,7 @@ type ResAlldHTTPEventSuccess struct {
 func (api *APIServerHTTP) allHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := api.Event.GetAll(context.Background())
 	if err != nil {
-		api.Error(w, err, http.StatusBadRequest, GetFunc())
+		api.Error(w, err, http.StatusBadRequest, F())
 		return
 	}
 	w.WriteHeader(http.StatusOK)

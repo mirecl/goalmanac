@@ -15,6 +15,9 @@ type LogEvent struct {
 
 // NewLogEvent - создаем инстанцию
 func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
+	var StdOut *log.Entry
+	var File *log.Entry
+
 	// Создаем инстанция для logger'a в Stdout
 	loggerStdOut := log.New()
 	// Настройки отображения
@@ -31,10 +34,9 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 	logLevel, err := log.ParseLevel(cfg.LogEVENT.Level)
 	if err != nil {
 		return nil, err
-		// log.WithFields(log.Fields{"type": "loggerEvent"}).Errorln(err.Error())
-		// os.Exit(0)
 	}
 	loggerStdOut.SetLevel(logLevel)
+	StdOut = loggerStdOut.WithFields(log.Fields{"type": "event"})
 
 	// Создаем инстанция для logger'a в file
 	loggerFile := log.New()
@@ -46,22 +48,16 @@ func NewLogEvent(cfg *adapters.Config) (*LogEvent, error) {
 	loggerFile.SetLevel(log.InfoLevel)
 
 	// Создаем/открываем файл для логирвания
-	logFile, err := os.OpenFile(cfg.LogHTTP.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	logFile, err := os.OpenFile(cfg.LogEVENT.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
 		return nil, err
 	}
 
 	// Указываем вывод в file
 	loggerFile.SetOutput(logFile)
+	File = loggerFile.WithFields(log.Fields{"type": "event"})
 
-	return &LogEvent{
-		StdOut: loggerStdOut.WithFields(log.Fields{
-			"type": "event",
-		}),
-		File: loggerFile.WithFields(log.Fields{
-			"type": "event",
-		}),
-	}, nil
+	return &LogEvent{StdOut: StdOut, File: File}, nil
 }
 
 // Errorf - вывод ошибок

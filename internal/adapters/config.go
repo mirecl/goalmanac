@@ -66,7 +66,6 @@ func CreateConfig(file string, cfg *Config) error {
 	if err := viper.ReadInConfig(); err == nil {
 		log.WithFields(log.Fields{"type": "cmd"}).Info("Using config file:", viper.ConfigFileUsed())
 	}
-
 	err := viper.Unmarshal(&cfg)
 	if err != nil {
 		return err

@@ -48,7 +48,7 @@ func (api *APIServerHTTP) logHandler(next http.Handler) http.Handler {
 		if re.MatchString(strconv.Itoa(o.status)) {
 			api.Logger.Infof(&o.status, "%s %s %s", r.RequestURI, r.Method, time.Since(start))
 		} else {
-			api.Logger.Errorf(&o.status, GetFunc(), "%s %s %s", r.RequestURI, r.Method, time.Since(start))
+			api.Logger.Errorf(&o.status, F(), "%s %s %s", r.RequestURI, r.Method, time.Since(start))
 		}
 	})
 }
@@ -59,13 +59,13 @@ func (api *APIServerHTTP) validateHandler(next http.HandlerFunc, a validate.Vali
 		// Чтение входных параметров
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			api.Error(w, err, http.StatusBadRequest, GetFunc())
+			api.Error(w, err, http.StatusBadRequest, F())
 			return
 		}
 		// Валидация данных
 		result, err := a.Validate(body)
 		if err != nil {
-			api.Error(w, err, http.StatusBadRequest, GetFunc())
+			api.Error(w, err, http.StatusBadRequest, F())
 			return
 		}
 		// Формирование ответа
@@ -78,7 +78,7 @@ func (api *APIServerHTTP) validateHandler(next http.HandlerFunc, a validate.Vali
 				}
 				errS = fmt.Errorf("%s: %s  %w", errD.Field(), errD.Description(), errS)
 			}
-			api.Error(w, errS, http.StatusBadRequest, GetFunc())
+			api.Error(w, errS, http.StatusBadRequest, F())
 			return
 		}
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))

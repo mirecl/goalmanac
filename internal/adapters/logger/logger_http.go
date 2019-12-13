@@ -15,6 +15,9 @@ type LogHTTP struct {
 
 // NewLogHTTP - создаем инстанцию
 func NewLogHTTP(cfg *adapters.Config) (*LogHTTP, error) {
+	var StdOut *log.Entry
+	var File *log.Entry
+
 	// Создаем инстанция для logger'a в Stdout
 	loggerStdOut := log.New()
 	// Настройки отображения
@@ -26,6 +29,7 @@ func NewLogHTTP(cfg *adapters.Config) (*LogHTTP, error) {
 	}
 	// Указываем вывод в Stdout
 	loggerStdOut.SetOutput(os.Stdout)
+	StdOut = loggerStdOut.WithFields(log.Fields{"type": "http"})
 
 	// Указываем уровень логирования для Stdout
 	logLevel, err := log.ParseLevel(cfg.LogHTTP.Level)
@@ -44,21 +48,15 @@ func NewLogHTTP(cfg *adapters.Config) (*LogHTTP, error) {
 	loggerFile.SetLevel(log.InfoLevel)
 
 	// Создаем/открываем файл для логирвания
-	logFile, err := os.OpenFile(cfg.LogEVENT.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
+	logFile, err := os.OpenFile(cfg.LogHTTP.Path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0755)
 	if err != nil {
 		return nil, err
 	}
 	// Указываем вывод в file
 	loggerFile.SetOutput(logFile)
+	File = loggerFile.WithFields(log.Fields{"type": "http"})
 
-	return &LogHTTP{
-		StdOut: loggerStdOut.WithFields(log.Fields{
-			"type": "http",
-		}),
-		File: loggerFile.WithFields(log.Fields{
-			"type": "http",
-		}),
-	}, nil
+	return &LogHTTP{StdOut: StdOut, File: File}, nil
 }
 
 // Errorf - вывод ошибок

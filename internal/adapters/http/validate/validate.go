@@ -1,19 +1,21 @@
 package validate
 
 import (
-	"fmt"
 	"io/ioutil"
-	"path/filepath"
+	"os"
+	"path"
+	"runtime"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/xeipuuv/gojsonschema"
 )
 
-// Validater ...
+// Validater - интерфейс для валидации endpoint по POST
 type Validater interface {
 	Validate(body []byte) (*gojsonschema.Result, error)
 }
 
-// CreateValidater ...
+// CreateValidater - валидаторы
 var (
 	Create *Schema
 	Change *Schema
@@ -25,15 +27,19 @@ type Schema struct {
 }
 
 func init() {
-	crFile, err := loadFile("internal/adapters/http/validate/createEvent.json")
+	// Чтение схемы для валидации создания события
+	crFile, err := loadFile("createEvent.json")
 	if err != nil {
-		fmt.Println(err)
+		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+		os.Exit(0)
 	}
 	Create = &Schema{schema: crFile}
 
-	chFile, err := loadFile("internal/adapters/http/validate/changeEvent.json")
+	// Чтение схемы для валидации изменения события
+	chFile, err := loadFile("changeEvent.json")
 	if err != nil {
-		fmt.Println(err)
+		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+		os.Exit(0)
 	}
 	Change = &Schema{schema: chFile}
 }
@@ -43,19 +49,17 @@ func (c *Schema) Validate(body []byte) (*gojsonschema.Result, error) {
 	loader := gojsonschema.NewBytesLoader(body)
 	result, err := gojsonschema.Validate(c.schema, loader)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err)
+		return nil, err
 	}
 	return result, nil
 }
 
 func loadFile(file string) (gojsonschema.JSONLoader, error) {
-	path, err := filepath.Abs(file)
+	_, paths, _, _ := runtime.Caller(0)
+	fileS := path.Join(paths, "../", file)
+	s, err := ioutil.ReadFile(fileS)
 	if err != nil {
 		return nil, err
-	}
-	s, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("%s", err)
 	}
 	schema := gojsonschema.NewBytesLoader(s)
 	return schema, nil
