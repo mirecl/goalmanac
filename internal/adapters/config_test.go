@@ -25,7 +25,7 @@ func TestCreateConfigNull(t *testing.T) {
 
 func TestCreateConfigFile(t *testing.T) {
 	var cfg Config
-	path, _ := filepath.Abs("../../config.yaml")
+	path, _ := filepath.Abs("../../config/config.yaml")
 	err := CreateConfig(path, &cfg)
 	require.NoError(t, err)
 	require.Equal(t, cfg.HTTP.Host, "127.0.0.1")

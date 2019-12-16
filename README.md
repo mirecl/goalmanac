@@ -106,7 +106,7 @@ Web-сервер должен запускаться на порту указа�
 
 **Описание**
 
-Запуск ссервиса
+Запуск сервиса
 ```bash
 make http
 ```
@@ -120,6 +120,92 @@ make http
 ![Изменение/удаление события](https://github.com/mirecl/goalmanac/blob/master/img/3.png)
 
 
+Покрытие сервиса тестами:
+```bash
+make test
+```
+```bash
+?       github.com/mirecl/goalmanac     [no test files]
+?       github.com/mirecl/goalmanac/cmd [no test files]
+ok      github.com/mirecl/goalmanac/internal/adapters   0.004s  coverage: 92.3% of statements
+ok      github.com/mirecl/goalmanac/internal/adapters/db        (cached)        coverage: 48.5% of statements
+ok      github.com/mirecl/goalmanac/internal/adapters/http      0.003s
+ok      github.com/mirecl/goalmanac/internal/adapters/http/validate     0.003s
+ok      github.com/mirecl/goalmanac/internal/adapters/logger    (cached)        coverage: 63.0% of statements
+ok      github.com/mirecl/goalmanac/internal/domain     (cached)        coverage: 100.0% of statements
+?       github.com/mirecl/goalmanac/internal/domain/entities    [no test files]
+?       github.com/mirecl/goalmanac/internal/domain/errors      [no test files]
+?       github.com/mirecl/goalmanac/internal/domain/interfaces  [no test files]
+ok      github.com/mirecl/goalmanac/internal/domain/usecases    (cached)        coverage: 44.2% of statements
+```
+
+Для валидации входных параметров (POST-запросы) использовал пакет:
+```bash
+github.com/xeipuuv/gojsonschema
+```
+Примеры JSON-Schem в папке config:
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Событие",
+  "description": "Создание события в Календаре",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "UID События",
+      "type": "string",
+      "maxLength": 36,
+      "minLength": 36
+    },
+    "user": {
+      "description": "Пользователь",
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "description": "Заголовок события",
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "description": "Описание события",
+      "type": "string",
+      "minLength": 1
+    },
+    "start": {
+      "description": "Время старта события",
+      "type": "string",
+      "format": "date-time",
+      "minLength": 1
+    },
+    "duration": {
+      "description": "Продолжительность события",
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "10m",
+        "20m",
+        "30m",
+        "40m",
+        "50m",
+        "60m"
+      ]
+    }
+  },
+  "required": [
+    "user",
+    "title",
+    "body",
+    "start",
+    "duration"
+  ]
+}
+```
+
+Для работы с дата/время использовал:
+```bash
+github.com/jinzhu/now
+```  
 
 ### Documentation
 * [API Reference](http://godoc.org/github.com/mirecl/goalmanac)
