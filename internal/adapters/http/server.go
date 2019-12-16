@@ -66,6 +66,8 @@ func (api *APIServerHTTP) Serve() error {
 
 	// Устанавливаем handler для /hello
 	r.HandleFunc("/hello", api.helloHandler).Methods("GET")
+	// Устанавливаем handler для icon
+	r.HandleFunc("/hello", faviconHandler).Methods("GET")
 	// Устанавливаем handler для /api/count_event
 	r.HandleFunc("/api/count_event", api.cntHandler).Methods("GET")
 	// Устанавливаем handler для /api/create_event
@@ -87,7 +89,7 @@ func (api *APIServerHTTP) Serve() error {
 
 	// Подключаем SPA
 	spa := spaHandler{
-		staticPath: "internal/ui",
+		staticPath: "ui",
 		indexPath:  "index.html",
 	}
 	r.PathPrefix("/").Handler(spa)
@@ -132,4 +134,8 @@ func (api *APIServerHTTP) Serve() error {
 func (api *APIServerHTTP) helloHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Hello"))
+}
+
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "ui/favicon.ico")
 }

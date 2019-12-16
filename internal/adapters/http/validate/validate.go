@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"runtime"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/xeipuuv/gojsonschema"
@@ -45,8 +45,11 @@ func (c *Schema) Validate(body []byte) (*gojsonschema.Result, error) {
 }
 
 func loadFile(file string) (gojsonschema.JSONLoader, error) {
-	_, paths, _, _ := runtime.Caller(0)
-	fileS := path.Join(paths, "../", file)
+	paths, err := filepath.Abs("./config")
+	if err != nil {
+		return nil, err
+	}
+	fileS := path.Join(paths, file)
 	s, err := ioutil.ReadFile(fileS)
 	if err != nil {
 		return nil, err
@@ -57,14 +60,14 @@ func loadFile(file string) (gojsonschema.JSONLoader, error) {
 
 func createValidate() error {
 	// Чтение схемы для валидации создания события
-	crFile, err := loadFile("createEvent.json")
+	crFile, err := loadFile("ValidateCreateEvent.json")
 	if err != nil {
 		return err
 	}
 	Create = &Schema{schema: crFile}
 
 	// Чтение схемы для валидации изменения события
-	chFile, err := loadFile("changeEvent.json")
+	chFile, err := loadFile("ValidateChangeEvent.json")
 	if err != nil {
 		return err
 	}

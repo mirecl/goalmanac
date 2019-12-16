@@ -20,6 +20,8 @@ import (
 func init() {
 	log.SetOutput(ioutil.Discard)
 }
+
+// TestAdd1 - добавление записи 20 раз
 func TestAdd1(t *testing.T) {
 	var cfg adapters.Config
 	adapters.CreateConfig(".", &cfg)
@@ -47,6 +49,7 @@ func TestAdd1(t *testing.T) {
 	require.Equal(t, *cnt, 20)
 }
 
+// TestAdd2 - добавление записи с некорректной датой
 func TestAdd2(t *testing.T) {
 	var cfg adapters.Config
 	adapters.CreateConfig(".", &cfg)
@@ -76,6 +79,7 @@ func TestAdd2(t *testing.T) {
 	require.EqualError(t, err, errors.ErrAfterDay)
 }
 
+// TestDelete - удаление события в пустой таблицы
 func TestDelete(t *testing.T) {
 	var cfg adapters.Config
 	adapters.CreateConfig(".", &cfg)
@@ -94,6 +98,7 @@ func TestDelete(t *testing.T) {
 	require.EqualError(t, err, "No Data for Delete")
 }
 
+// TestUpdate - обновления события без ошибок
 func TestUpdate(t *testing.T) {
 	var cfg adapters.Config
 	adapters.CreateConfig(".", &cfg)
@@ -130,6 +135,7 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 }
 
+// TestAll - получить все события
 func TestAll(t *testing.T) {
 	var err error
 	var cfg adapters.Config
