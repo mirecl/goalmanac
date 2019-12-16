@@ -86,12 +86,12 @@ log_event:
 Реализовать middleware для логирования запросов
 
 Методы API:
-- POST /create_event
-- POST /update_event
-- POST /delete_event
-- GET /events_for_day
-- GET /events_for_week
-- GET /events_for_month
+- POST /create_event (создание)
+- POST /update_event (обновление)
+- POST /delete_event (удаление)
+- GET /events_for_day (события на сегодня)
+- GET /events_for_week (события на этой недели)
+- GET /events_for_month (события в этом месяце)
 
 В результате каждого запроса должен возвращаться JSON документ содержащий
 либо ***{"result": "..."}*** в случае успешного выполнения метода
@@ -105,9 +105,14 @@ log_event:
 Web-сервер должен запускаться на порту указанном в конфиге и выводить в лог каждый обработанный запрос.
 
 **Описание**
-Имеется графический интерфейс для создания/изменения/удаления событий:
 
-![Иллюстрация к проекту](https://github.com/mirecl/goalmanac/blob/master/img/1.png)
+Имеется графический интерфейс для создания/изменения/удаления событий:
+- Общий вид (список событий)
+![Общий вид](https://github.com/mirecl/goalmanac/blob/master/img/1.png)
+- Создание события
+![Создание события](https://github.com/mirecl/goalmanac/blob/master/img/2.png)
+- Изменение/удаление события
+![Изменение/удаление события](https://github.com/mirecl/goalmanac/blob/master/img/3.png)
 
 
 
