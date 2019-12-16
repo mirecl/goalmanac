@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/mirecl/goalmanac/internal/adapters/db"
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
@@ -30,19 +28,19 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 	// Создаем logger для событий в Календаре
 	loggerEvent, err := logger.NewLogEvent(&cfg)
 	if err != nil {
-		return fmt.Errorf("Error in logger.NewLogEvent %w", err)
+		return err
 	}
 
 	// Создаем logger для событий в api http
 	loggerHTTP, err := logger.NewLogHTTP(&cfg)
 	if err != nil {
-		return fmt.Errorf("Error in logger.NewLogHTTP %w", err)
+		return err
 	}
 
 	// Создаем инстанция БД в памяти
 	memdb, err := db.NewMemStorage()
 	if err != nil {
-		return fmt.Errorf("Error in db.NewMemStorage %w", err)
+		return err
 	}
 
 	// Создаем интсанцию Бизнес-операцией с Календарем
@@ -55,7 +53,7 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 	var helper mux.HelperHTTP
 	err = mux.CreateHelperHTTP(&helper)
 	if err != nil {
-		return fmt.Errorf("Error in mux.CreateHelperHTTP %w", err)
+		return err
 	}
 
 	// Создаем инстанцию HTTP API
