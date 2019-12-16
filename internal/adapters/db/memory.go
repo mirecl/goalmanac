@@ -3,7 +3,9 @@ package db
 import (
 	"context"
 	"sync"
+	"time"
 
+	"github.com/jinzhu/now"
 	"github.com/mirecl/goalmanac/internal/domain/entities"
 	uuid "github.com/satori/go.uuid"
 )
@@ -76,4 +78,59 @@ func (m *MemEventStorage) GetAll(ctx context.Context) ([]*entities.Event, error)
 	m.mux.Lock()
 	defer m.mux.Unlock()
 	return m.db, nil
+}
+
+// GetForDay ...
+func (m *MemEventStorage) GetForDay(ctx context.Context, user string) ([]*entities.Event, error) {
+	event := make([]*entities.Event, 0, len(m.db))
+	m.mux.Lock()
+	s := now.BeginningOfDay()
+	end := now.EndOfDay()
+	defer m.mux.Unlock()
+	for _, e := range m.db {
+		if s.Before(*e.StartTime) && end.After(*e.StartTime) && e.User == user {
+			event = append(event, e)
+		}
+	}
+	return event, nil
+}
+
+// GetForWeek ...
+func (m *MemEventStorage) GetForWeek(ctx context.Context, user string) ([]*entities.Event, error) {
+	event := make([]*entities.Event, 0, len(m.db))
+	location, err := time.LoadLocation("Local")
+	if err != nil {
+		return nil, err
+	}
+	cfgTime := &now.Config{WeekStartDay: time.Monday, TimeLocation: location}
+	s := cfgTime.With(time.Now()).BeginningOfWeek()
+	end := cfgTime.With(time.Now()).EndOfWeek()
+	m.mux.Lock()
+	defer m.mux.Unlock()
+	for _, e := range m.db {
+		if s.Before(*e.StartTime) && end.After(*e.StartTime) && e.User == user {
+			event = append(event, e)
+		}
+	}
+	return event, nil
+}
+
+// GetForMonth ...
+func (m *MemEventStorage) GetForMonth(ctx context.Context, user string) ([]*entities.Event, error) {
+	event := make([]*entities.Event, 0, len(m.db))
+	location, err := time.LoadLocation("Local")
+	if err != nil {
+		return nil, err
+	}
+	cfgTime := &now.Config{WeekStartDay: time.Monday, TimeLocation: location}
+	s := cfgTime.With(time.Now()).BeginningOfMonth()
+	end := cfgTime.With(time.Now()).EndOfMonth()
+	m.mux.Lock()
+	defer m.mux.Unlock()
+	for _, e := range m.db {
+		if s.Before(*e.StartTime) && end.After(*e.StartTime) && e.User == user {
+			event = append(event, e)
+		}
+	}
+	return event, nil
 }

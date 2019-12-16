@@ -74,6 +74,12 @@ func (api *APIServerHTTP) Serve() error {
 	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
 	// Устанавливаем handler для /api/update_event
 	r.HandleFunc("/api/update_event", api.validateHandler(api.updateHandler, v.Change)).Methods("POST")
+	// Устанавливаем handler для /api/events_for_day
+	r.HandleFunc("/api/events_for_day", api.getDayHandler).Methods("GET")
+	// Устанавливаем handler для /api/events_for_week
+	r.HandleFunc("/api/events_for_week", api.getWeekHandler).Methods("GET")
+	// Устанавливаем handler для /api/events_for_month
+	r.HandleFunc("/api/events_for_month", api.getMonthHandler).Methods("GET")
 	// Устанавливаем handler для /api/all_event
 	r.HandleFunc("/api/all_event", api.allHandler).Methods("GET")
 	// Устанавливаем Middleware для log

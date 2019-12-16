@@ -14,6 +14,9 @@ type EventStorage interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, event *entities.Event) error
 	GetAll(ctx context.Context) ([]*entities.Event, error)
+	GetForDay(ctx context.Context, user string) ([]*entities.Event, error)
+	GetForWeek(ctx context.Context, user string) ([]*entities.Event, error)
+	GetForMonth(ctx context.Context, user string) ([]*entities.Event, error)
 }
 
 // EventLogger ...

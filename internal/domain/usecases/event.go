@@ -71,3 +71,33 @@ func (event *EventUsecases) GetAll(ctx context.Context) ([]*entities.Event, erro
 	}
 	return data, nil
 }
+
+// GetForDay - события сегодня
+func (event *EventUsecases) GetForDay(ctx context.Context, user string) ([]*entities.Event, error) {
+	data, err := event.Storage.GetForDay(ctx, user)
+	if err != nil {
+		event.Logger.Errorf(domain.GetFunc(), "%s", err)
+		return nil, err
+	}
+	return data, nil
+}
+
+// GetForWeek - события на этой недели
+func (event *EventUsecases) GetForWeek(ctx context.Context, user string) ([]*entities.Event, error) {
+	data, err := event.Storage.GetForWeek(ctx, user)
+	if err != nil {
+		event.Logger.Errorf(domain.GetFunc(), "%s", err)
+		return nil, err
+	}
+	return data, nil
+}
+
+// GetForMonth - события в этом месяце
+func (event *EventUsecases) GetForMonth(ctx context.Context, user string) ([]*entities.Event, error) {
+	data, err := event.Storage.GetForMonth(ctx, user)
+	if err != nil {
+		event.Logger.Errorf(domain.GetFunc(), "%s", err)
+		return nil, err
+	}
+	return data, nil
+}
