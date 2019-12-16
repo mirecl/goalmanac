@@ -27,21 +27,11 @@ type Schema struct {
 }
 
 func init() {
-	// Чтение схемы для валидации создания события
-	crFile, err := loadFile("createEvent.json")
-	if err != nil {
-		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
+	// Создаем валидаторы
+	if err := createValidate(); err != nil {
+		log.WithFields(log.Fields{"type": "http"}).Errorln(err.Error())
 		os.Exit(0)
 	}
-	Create = &Schema{schema: crFile}
-
-	// Чтение схемы для валидации изменения события
-	chFile, err := loadFile("changeEvent.json")
-	if err != nil {
-		log.WithFields(log.Fields{"type": "cmd"}).Errorln(err.Error())
-		os.Exit(0)
-	}
-	Change = &Schema{schema: chFile}
 }
 
 // Validate ...
@@ -63,4 +53,21 @@ func loadFile(file string) (gojsonschema.JSONLoader, error) {
 	}
 	schema := gojsonschema.NewBytesLoader(s)
 	return schema, nil
+}
+
+func createValidate() error {
+	// Чтение схемы для валидации создания события
+	crFile, err := loadFile("createEvent.json")
+	if err != nil {
+		return err
+	}
+	Create = &Schema{schema: crFile}
+
+	// Чтение схемы для валидации изменения события
+	chFile, err := loadFile("changeEvent.json")
+	if err != nil {
+		return err
+	}
+	Change = &Schema{schema: chFile}
+	return nil
 }

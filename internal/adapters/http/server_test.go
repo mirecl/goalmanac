@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/mirecl/goalmanac/internal/adapters"
@@ -16,19 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// func TestRunServer(t *testing.T) {
-// 	var buf bytes.Buffer
-// 	log.SetOutput(&buf)
-// 	log.SetOutput(os.Stdout)
-
-// 	api, err := createAPI()
-// 	require.NoError(t, err)
-// 	go api.Serve()
-// 	time.Sleep(20 * time.Second)
-
-// 	t.Log(buf.String())
-// 	require.Equal(t, "", "1")
-// }
+// TestHelloHandler - тестируем endpoint /hello - результат hello
 func TestHelloHandler(t *testing.T) {
 
 	// Создаем инстанцию HTTP API
@@ -49,6 +38,8 @@ func TestHelloHandler(t *testing.T) {
 	// Проверка ответа
 	require.Equal(t, rr.Body.String(), "Hello")
 }
+
+// TestCountHandler - тестируем endpoint /api/count_event - результат количество событий = 0
 
 func TestCountHandler(t *testing.T) {
 	api, err := createAPI()
@@ -71,6 +62,7 @@ func TestCountHandler(t *testing.T) {
 	require.Equal(t, resp.Result, 0)
 }
 
+// TestCreateHandler - тестируем endpoint /api/create_event - результат успешно созданное событие
 func TestCreateHandler(t *testing.T) {
 	api, err := createAPI()
 	require.NoError(t, err)
@@ -100,6 +92,7 @@ func TestCreateHandler(t *testing.T) {
 	require.NotEmpty(t, resp.Result)
 }
 
+// TestCreateHandler - тестируем endpoint /api/create_event" - валидация входных данных не прошла проверку
 func TestValidateHandler(t *testing.T) {
 	api, err := createAPI()
 	require.NoError(t, err)
@@ -129,6 +122,7 @@ func TestValidateHandler(t *testing.T) {
 	require.Equal(t, "duration: duration must be one of the following: \"10m\", \"20m\", \"30m\", \"40m\", \"50m\", \"60m\"", resp.Error)
 }
 
+// TestUpdateHandler - тестируем endpoint /api/update_event - успешно изменили событие
 func TestUpdateHandler(t *testing.T) {
 	api, err := createAPI()
 	require.NoError(t, err)
@@ -182,6 +176,7 @@ func TestUpdateHandler(t *testing.T) {
 	require.Equal(t, "OK", respUpd.Result)
 }
 
+// TestDeleteHandler - тестируем endpoint /api/delete_event - не найдено данных для удаления
 func TestDeleteHandler(t *testing.T) {
 	api, err := createAPI()
 	require.NoError(t, err)
@@ -208,6 +203,7 @@ func TestDeleteHandler(t *testing.T) {
 	require.Equal(t, "No Data for Delete", resp.Error)
 }
 
+// createAPI - создание конфигурации сервера
 func createAPI() (*APIServerHTTP, error) {
 	var cfg adapters.Config
 	adapters.CreateConfig(".", &cfg)
@@ -222,8 +218,8 @@ func createAPI() (*APIServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
-	// os.Remove("http.log")
-	// os.Remove("event.log")
+	os.Remove("http.log")
+	os.Remove("event.log")
 
 	// Создаем инстанция БД в памяти
 	memdb, err := db.NewMemStorage()
