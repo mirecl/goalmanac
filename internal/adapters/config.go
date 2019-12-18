@@ -29,18 +29,28 @@ type ConfigEVENTLog struct {
 	Path  string `mapstructure:"path"`
 }
 
+// ConfigDB ...
+type ConfigDB struct {
+	User     string `mapstructure:"POSTGRES_USER"`
+	Password string `mapstructure:"POSTGRES_PASSWORD"`
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Database string `mapstructure:"POSTGRES_DB"`
+}
+
 // Config ...
 type Config struct {
 	HTTP     *ConfigHTTP     `mapstructure:"http"`
 	LogHTTP  *ConfigHTTPLog  `mapstructure:"log_http"`
 	LogEVENT *ConfigEVENTLog `mapstructure:"log_event"`
+	DB       *ConfigDB       `mapstructure:"db"`
 }
 
 // CreateConfig ...
 func CreateConfig(file string, cfg *Config) error {
 	// Проверка файла конфигурации
 	if _, err := os.Stat(file); os.IsNotExist(err) {
-		log.WithFields(log.Fields{"type": "cmd"}).Warningln(err.Error())
+		log.WithFields(log.Fields{"type": "cmd"}).Warningln(err)
 	}
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(file)
@@ -61,6 +71,19 @@ func CreateConfig(file string, cfg *Config) error {
 		"writetimeout": 15,
 		"readtimeout":  15,
 	})
+	viper.SetDefault("db", map[string]interface{}{
+		"host":              "127.0.0.1",
+		"port":              "5432",
+		"POSTGRES_USER":     "postgre",
+		"POSTGRES_DB":       "postgre",
+		"POSTGRES_PASSWORD": "postgre",
+	})
+
+	viper.AutomaticEnv()
+	// Зачитываем credential для БД
+	viper.BindEnv("db.POSTGRES_PASSWORD", "POSTGRES_PASSWORD")
+	viper.BindEnv("db.POSTGRES_USER", "POSTGRES_USER")
+	viper.BindEnv("db.POSTGRES_DB", "POSTGRES_DB")
 
 	// Чтения настроек
 	if err := viper.ReadInConfig(); err == nil {

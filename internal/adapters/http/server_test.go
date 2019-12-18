@@ -39,29 +39,6 @@ func TestHelloHandler(t *testing.T) {
 	require.Equal(t, rr.Body.String(), "Hello")
 }
 
-// TestCountHandler - тестируем endpoint /api/count_event - результат количество событий = 0
-
-func TestCountHandler(t *testing.T) {
-	api, err := createAPI()
-	require.NoError(t, err)
-
-	req, err := http.NewRequest("GET", "/api/count_event", nil)
-	require.NoError(t, err)
-
-	rr := httptest.NewRecorder()
-
-	handler := http.HandlerFunc(api.cntHandler)
-	handler.ServeHTTP(rr, req)
-
-	// Проверка статуса запроса
-	require.Equal(t, rr.Code, http.StatusOK)
-
-	// Проверка ответа
-	var resp cntHTTPEvent
-	json.NewDecoder(rr.Body).Decode(&resp)
-	require.Equal(t, resp.Result, 0)
-}
-
 // TestCreateHandler - тестируем endpoint /api/create_event - результат успешно созданное событие
 func TestCreateHandler(t *testing.T) {
 	api, err := createAPI()
@@ -70,7 +47,7 @@ func TestCreateHandler(t *testing.T) {
 	requestBody, err := json.Marshal(map[string]string{
 		"body":     "test",
 		"duration": "10m",
-		"start":    "2019-12-16T12:50:00.000Z",
+		"start":    "2020-12-16T12:50:00.000Z",
 		"title":    "Golang",
 		"user":     "test",
 	})
@@ -100,7 +77,7 @@ func TestValidateHandler(t *testing.T) {
 	requestBody, err := json.Marshal(map[string]string{
 		"body":     "test",
 		"duration": "11m",
-		"start":    "2019-12-16T12:50:00.000Z",
+		"start":    "2020-12-16T12:50:00.000Z",
 		"title":    "Golang",
 		"user":     "test",
 	})
@@ -130,7 +107,7 @@ func TestUpdateHandler(t *testing.T) {
 	requestBody, err := json.Marshal(map[string]string{
 		"body":     "test",
 		"duration": "10m",
-		"start":    "2019-12-16T12:50:00.000Z",
+		"start":    "2020-12-16T12:50:00.000Z",
 		"title":    "Golang",
 		"user":     "test",
 	})
@@ -154,7 +131,7 @@ func TestUpdateHandler(t *testing.T) {
 		"id":       resp.Result.String(),
 		"body":     "test2",
 		"duration": "10m",
-		"start":    "2019-12-16T12:50:00.000Z",
+		"start":    "2020-12-16T12:50:00.000Z",
 		"title":    "Golang",
 		"user":     "test",
 	})

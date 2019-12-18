@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
+	"runtime"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/xeipuuv/gojsonschema"
@@ -45,11 +45,8 @@ func (c *Schema) Validate(body []byte) (*gojsonschema.Result, error) {
 }
 
 func loadFile(file string) (gojsonschema.JSONLoader, error) {
-	paths, err := filepath.Abs("./config")
-	if err != nil {
-		return nil, err
-	}
-	fileS := path.Join(paths, file)
+	_, b, _, _ := runtime.Caller(0)
+	fileS := path.Join(b, "../../../../../config", file)
 	s, err := ioutil.ReadFile(fileS)
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -50,6 +51,7 @@ func (api *APIServerHTTP) updateHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	endTime := startTime.Add(timeEvent)
+	fmt.Println(startTime, endTime)
 
 	changeEvent := &entities.Event{
 		ID:        req.ID,

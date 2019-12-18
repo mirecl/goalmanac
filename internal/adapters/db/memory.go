@@ -14,7 +14,7 @@ import (
 type MemEventStorage struct {
 	mux *sync.Mutex
 	db  []*entities.Event
-	cnt int
+	cnt int64
 }
 
 //NewMemStorage - создаем инстанцию БД в памяти
@@ -29,14 +29,6 @@ func (m *MemEventStorage) Save(ctx context.Context, event *entities.Event) error
 	m.cnt++
 	m.mux.Unlock()
 	return nil
-}
-
-//GetCount - получить общее количество событий
-func (m *MemEventStorage) GetCount(ctx context.Context) (int, error) {
-	m.mux.Lock()
-	cnt := m.cnt
-	m.mux.Unlock()
-	return cnt, nil
 }
 
 // Delete ...

@@ -20,11 +20,9 @@ func TestSave(t *testing.T) {
 	require.NoError(t, err)
 
 	for i := 0; i < 20; i++ {
-		memdb.Save(context.Background(), event)
+		err = memdb.Save(context.Background(), event)
+		require.NoError(t, err)
 	}
-
-	cnt, _ := memdb.GetCount(context.Background())
-	require.Equal(t, cnt, 20)
 }
 
 func TestAll(t *testing.T) {

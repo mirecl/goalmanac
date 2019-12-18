@@ -26,20 +26,10 @@ func (event *EventUsecases) Add(ctx context.Context, new *entities.Event) error 
 		return fmt.Errorf("%s", errors.ErrAfterDay)
 	}
 	if err := event.Storage.Save(ctx, new); err != nil {
-		event.Logger.Errorf("%s %s", errors.ErrSaveEvent, err)
+		event.Logger.Errorf(domain.GetFunc(), "%s %s", errors.ErrSaveEvent, err)
 		return err
 	}
 	return nil
-}
-
-// GetCount - получить число общее число событий
-func (event *EventUsecases) GetCount(ctx context.Context) (*int, error) {
-	cnt, err := event.Storage.GetCount(ctx)
-	if err != nil {
-		event.Logger.Errorf(domain.GetFunc(), "%s: %s", errors.ErrGetCount, err)
-		return nil, err
-	}
-	return &cnt, nil
 }
 
 // Delete - удалить событие по ID

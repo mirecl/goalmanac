@@ -43,10 +43,9 @@ func TestAdd1(t *testing.T) {
 	}
 
 	for i := 0; i < 20; i++ {
-		_ = uses.Add(ctx, new)
+		err := uses.Add(ctx, new)
+		require.NoError(t, err)
 	}
-	cnt, _ := uses.GetCount(ctx)
-	require.Equal(t, *cnt, 20)
 }
 
 // TestAdd2 - добавление записи с некорректной датой

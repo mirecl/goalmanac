@@ -7,3 +7,6 @@ log_http:
 log_event:
   level: info
   path: info.log
+db:
+  host: 127.0.0.1
+  port: 5432

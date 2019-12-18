@@ -37,15 +37,15 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Создаем инстанция БД в памяти
-	memdb, err := db.NewMemStorage()
+	// Создаем инстанция БД - PostgreSQL
+	sqldb, err := db.NewSQLStorage(&cfg)
 	if err != nil {
 		return err
 	}
 
 	// Создаем интсанцию Бизнес-операцией с Календарем
 	use := &usecases.EventUsecases{
-		Storage: memdb,
+		Storage: sqldb,
 		Logger:  loggerEvent,
 	}
 

@@ -68,8 +68,6 @@ func (api *APIServerHTTP) Serve() error {
 	r.HandleFunc("/hello", api.helloHandler).Methods("GET")
 	// Устанавливаем handler для icon
 	r.HandleFunc("/hello", faviconHandler).Methods("GET")
-	// Устанавливаем handler для /api/count_event
-	r.HandleFunc("/api/count_event", api.cntHandler).Methods("GET")
 	// Устанавливаем handler для /api/create_event
 	r.HandleFunc("/api/create_event", api.validateHandler(api.createHandler, v.Create)).Methods("POST")
 	// Устанавливаем handler для /api/create_event

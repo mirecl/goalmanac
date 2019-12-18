@@ -10,7 +10,6 @@ import (
 // EventStorage - интерфейс для работы с событиями календаря
 type EventStorage interface {
 	Save(ctx context.Context, event *entities.Event) error
-	GetCount(ctx context.Context) (int, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, event *entities.Event) error
 	GetAll(ctx context.Context) ([]*entities.Event, error)
