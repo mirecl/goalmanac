@@ -258,6 +258,39 @@ viper.BindEnv("db.POSTGRES_DB", "POSTGRES_DB")
 
 **Описание**
 
+В конфигурацю добавились доп. параметры (./config/config.yaml).
+```yaml
+mq:
+  host: 127.0.0.1
+  port: 5672
+  polling: 30s # Частота опроса БД
+  period: 15m  # глубина выборки при опросе
+log_mq:
+  level: info
+  path: mq.log
+```
+Сервис MQ поднимается по команде:
+```bash
+make service
+```
+Файл запуска: docker-compose.yml
+```yaml
+mq:
+    image: rabbitmq:3.7.5-management
+    container_name: mq
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@app-rabbitmq:cached
+    environment:
+        RABBITMQ_ERLANG_COOKIE: 6085e2412b6fa88647466c6a81c0cea0
+        RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        RABBITMQ_DEFAULT_VHOST: /
+```
+Логин и пароль указываются через environment.
+
 ### Documentation
 * [API Reference](http://godoc.org/github.com/mirecl/goalmanac)
 
