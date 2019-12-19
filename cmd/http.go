@@ -4,6 +4,7 @@ import (
 	"github.com/mirecl/goalmanac/internal/adapters/db"
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
+	"github.com/mirecl/goalmanac/internal/adapters/mq"
 	"github.com/mirecl/goalmanac/internal/domain/usecases"
 	"github.com/spf13/cobra"
 )
@@ -37,15 +38,27 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Создаем logger для событий в api http
+	loggerMQ, err := logger.NewLogMQ(&cfg)
+	if err != nil {
+		return err
+	}
+
 	// Создаем инстанция БД - PostgreSQL
-	sqldb, err := db.NewSQLStorage(&cfg)
+	httpdb, err := db.NewSQLStorage(&cfg)
+	if err != nil {
+		return err
+	}
+
+	// Создаем инстанция БД - MQ
+	mqdb, err := db.NewMQStorage(&cfg)
 	if err != nil {
 		return err
 	}
 
 	// Создаем интсанцию Бизнес-операцией с Календарем
 	use := &usecases.EventUsecases{
-		Storage: sqldb,
+		Storage: httpdb,
 		Logger:  loggerEvent,
 	}
 
@@ -63,6 +76,20 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		Config: &cfg,
 		Helper: &helper,
 	}
+
+	// Создаем инстанцию MQ
+	mq := &mq.APIServerMQ{
+		Logger:  loggerMQ,
+		Storage: mqdb,
+		Config:  &cfg,
+	}
+
+	// Запускаем Sender
+	go mq.ServeSender()
+
+	// Запускаем Sheduler
+	go mq.ServeSheduler()
+
 	// Запускаем http-сервер
 	return server.Serve()
 }

@@ -1,12 +1,20 @@
 http:
   host: 127.0.0.1
   port: 8800
-log_http:
-  level: info
-  path: info.log
-log_event:
-  level: info
-  path: info.log
 db:
   host: 127.0.0.1
   port: 5432
+mq:
+  host: 127.0.0.1
+  port: 5672
+  polling: 30s 
+  period: 15m
+log_http:
+  level: info
+  path: info.log
+log_mq:
+  level: info
+  path: mq.log
+log_event:
+  level: info
+  path: info.log

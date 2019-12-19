@@ -29,6 +29,12 @@ type ConfigEVENTLog struct {
 	Path  string `mapstructure:"path"`
 }
 
+// ConfigMQLog ...
+type ConfigMQLog struct {
+	Level string `mapstructure:"level"`
+	Path  string `mapstructure:"path"`
+}
+
 // ConfigDB ...
 type ConfigDB struct {
 	User     string `mapstructure:"POSTGRES_USER"`
@@ -38,12 +44,24 @@ type ConfigDB struct {
 	Database string `mapstructure:"POSTGRES_DB"`
 }
 
+// ConfigMQ ...
+type ConfigMQ struct {
+	User     string `mapstructure:"RABBITMQ_DEFAULT_USER"`
+	Password string `mapstructure:"RABBITMQ_DEFAULT_PASS"`
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Period   string `mapstructure:"period"`
+	Polling  string `mapstructure:"polling"`
+}
+
 // Config ...
 type Config struct {
 	HTTP     *ConfigHTTP     `mapstructure:"http"`
+	DB       *ConfigDB       `mapstructure:"db"`
+	MQ       *ConfigMQ       `mapstructure:"mq"`
 	LogHTTP  *ConfigHTTPLog  `mapstructure:"log_http"`
 	LogEVENT *ConfigEVENTLog `mapstructure:"log_event"`
-	DB       *ConfigDB       `mapstructure:"db"`
+	LogMQ    *ConfigMQLog    `mapstructure:"log_mq"`
 }
 
 // CreateConfig ...
@@ -64,6 +82,10 @@ func CreateConfig(file string, cfg *Config) error {
 		"level": "info",
 		"path":  "event.log",
 	})
+	viper.SetDefault("log_mq", map[string]string{
+		"level": "info",
+		"path":  "mq.log",
+	})
 	viper.SetDefault("http", map[string]interface{}{
 		"host":         "127.0.0.1",
 		"port":         "8080",
@@ -78,12 +100,23 @@ func CreateConfig(file string, cfg *Config) error {
 		"POSTGRES_DB":       "postgre",
 		"POSTGRES_PASSWORD": "postgre",
 	})
+	viper.SetDefault("mq", map[string]interface{}{
+		"host":                  "127.0.0.1",
+		"port":                  "5672",
+		"RABBITMQ_DEFAULT_USER": "rabbitmq",
+		"RABBITMQ_DEFAULT_PASS": "rabbitmq",
+		"period":                "10m",
+		"polling":               "1m",
+	})
 
 	viper.AutomaticEnv()
 	// Зачитываем credential для БД
 	viper.BindEnv("db.POSTGRES_PASSWORD", "POSTGRES_PASSWORD")
 	viper.BindEnv("db.POSTGRES_USER", "POSTGRES_USER")
 	viper.BindEnv("db.POSTGRES_DB", "POSTGRES_DB")
+	// Зачитываем credential для MQ
+	viper.BindEnv("mq.RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_PASS")
+	viper.BindEnv("mq.RABBITMQ_DEFAULT_USER", "RABBITMQ_DEFAULT_USER")
 
 	// Чтения настроек
 	if err := viper.ReadInConfig(); err == nil {

@@ -39,7 +39,7 @@ func NewSQLStorage(cfg *adapters.Config) (*SQLEventStorage, error) {
 	if err = db.PingContext(ctx); err != nil {
 		return nil, err
 	}
-	log.WithFields(log.Fields{"type": "db"}).Info("Connect to DB - Good!")
+	log.WithFields(log.Fields{"type": "db"}).Info("Connect to DB (HTTP) - Good!")
 	return &SQLEventStorage{db: db}, nil
 }
 
@@ -73,7 +73,6 @@ func (s *SQLEventStorage) Delete(ctx context.Context, id uuid.UUID) error {
 
 // Update ...
 func (s *SQLEventStorage) Update(ctx context.Context, e *entities.Event) error {
-	fmt.Println(e.StartTime, e.EndTime)
 	// Формируем SQL
 	sql := `UPDATE almanac 
 			SET ("user", title, body, starttime, endtime) = (:user, :title, :body, :start, :end)

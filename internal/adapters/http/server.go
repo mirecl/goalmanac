@@ -110,7 +110,7 @@ func (api *APIServerHTTP) Serve() error {
 	// Запускаем http-сервер
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			api.Logger.Errorf(nil, F(), "Ошибка в функции %s: %s", "ListenAndServe", err)
+			api.Logger.Errorf(nil, F(), "%s", err)
 		}
 	}()
 
@@ -124,7 +124,7 @@ func (api *APIServerHTTP) Serve() error {
 	defer cancel()
 
 	srv.Shutdown(ctx)
-	api.Logger.Infof(nil, "%s", "shutting down")
+	api.Logger.Infof(nil, "%s", "http-server shutting down...")
 	return nil
 }
 
