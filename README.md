@@ -291,6 +291,33 @@ mq:
 ```
 Логин и пароль указываются через environment.
 
+Запуск сервисов Sender и Sheduler осуществляется через команду (при запуске http-сервера).
+```bash
+make http
+```
+Файл запуска: сmd/http.go (отдельный goroutine)
+```golang
+// Запускаем Sender
+go mq.ServeSender()
+// Запускаем Sheduler
+go mq.ServeSheduler()
+```
+
+Добавилось поле в таблицу Almanac - notify (статус отправки сообщения)
+- null - новое сообщение
+- "1" - сообщение отправлено пользователю
+
+Добавил файл миграции:
+```sql
+ALTER TABLE almanac ADD notify char(1);
+create index notify_idx on almanac (starttime,notify);
+```
+
+Логика сервиса нотификации:
+1) Сервис Sender сканирует БД каждые mq.polling c глубиной выборки mq.period, где notify is null;
+2) Все попавшиеся сообщения отправляются в Rabbit MQ;
+3) Сервис Sheduler считывает сообщения и отправляет пользователю и ставит в БД flag отправки, иначе не подтверждает отправку сообщения.
+
 ### Documentation
 * [API Reference](http://godoc.org/github.com/mirecl/goalmanac)
 
