@@ -269,6 +269,17 @@ log_mq:
   level: info
   path: mq.log
 ```
+Значение default:
+```golang
+	viper.SetDefault("mq", map[string]interface{}{
+		"host":                  "127.0.0.1",
+		"port":                  "5672",
+		"RABBITMQ_DEFAULT_USER": "rabbitmq",
+		"RABBITMQ_DEFAULT_PASS": "rabbitmq",
+		"period":                "10m",
+		"polling":               "1m",
+	})
+```
 Сервис MQ поднимается по команде:
 ```bash
 make service
@@ -295,7 +306,7 @@ mq:
 ```bash
 make http
 ```
-Файл запуска: сmd/http.go (отдельный goroutine)
+Файл запуска: сmd/http.go (отдельные goroutine)
 ```golang
 // Запускаем Sender
 go mq.ServeSender()
