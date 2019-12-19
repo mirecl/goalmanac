@@ -279,6 +279,9 @@ viper.SetDefault("mq", map[string]interface{}{
 	"period":                "10m",
 	"polling":               "1m",
 })
+// Зачитываем credential для MQ
+viper.BindEnv("mq.RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_PASS")
+viper.BindEnv("mq.RABBITMQ_DEFAULT_USER", "RABBITMQ_DEFAULT_USER")
 ```
 Сервис MQ поднимается по команде:
 ```bash
