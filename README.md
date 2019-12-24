@@ -380,6 +380,76 @@ go serverGRPC.Serve()
 make grpc
 ```
 
+Proto-файл (internal/adapters/grpc/api):
+```yaml
+syntax = "proto3";
+
+option go_package = "api";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// Методы Сервиса
+service Almanac {
+    rpc Create(EventCreate) returns (ResponseOK) {};
+    rpc Update(EventUpdate) returns (ResponseOK) {};
+    rpc Delete(EventDelete) returns (ResponseOK) {};
+    rpc GetAll(google.protobuf.Empty) returns (ResponseEvents) {};
+    rpc GetDayEvent(EventUser) returns (ResponseEvents) {};
+    rpc GetWeekEvent(EventUser) returns (ResponseEvents) {};
+    rpc GetMonthEvent(EventUser) returns (ResponseEvents) {};
+}
+
+// Создание события в календаре
+message EventCreate {
+    string user = 1;
+    string title = 2;
+    string body = 3;
+    google.protobuf.Timestamp starttime = 4;
+    string duration = 5;
+}
+
+// Обновление события в календаре
+message EventUpdate {
+    string id = 1;
+    string user = 2;
+    string title = 3;
+    string body = 4;
+    google.protobuf.Timestamp starttime = 5;
+    string duration = 6;
+}
+
+// Id события - для удаления
+message EventDelete {
+    string id = 1;
+}
+
+// Пользователь
+message EventUser {
+    string user = 1;
+}
+
+// Cобытие в календаре
+message Event {
+    string id = 1;
+    string user = 2;
+    string title = 3;
+    string body = 4;
+    google.protobuf.Timestamp starttime = 5;
+    google.protobuf.Timestamp endtime = 6;
+}
+
+// Успешный ответ - список Cобытий
+message ResponseEvents {
+    repeated Event result = 1;
+}
+
+// Успешный ответ от сервиса
+message ResponseOK {
+    string result = 1;
+}
+```
+
 ### Documentation
 * [API Reference](http://godoc.org/github.com/mirecl/goalmanac)
 
