@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/mirecl/goalmanac/internal/adapters/db"
+	grpc "github.com/mirecl/goalmanac/internal/adapters/grpc"
 	mux "github.com/mirecl/goalmanac/internal/adapters/http"
 	"github.com/mirecl/goalmanac/internal/adapters/logger"
 	"github.com/mirecl/goalmanac/internal/adapters/mq"
@@ -44,6 +45,12 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Создаем logger для событий в api grpc
+	loggerGRPC, err := logger.NewLogGRPC(&cfg)
+	if err != nil {
+		return err
+	}
+
 	// Создаем инстанция БД - PostgreSQL
 	httpdb, err := db.NewSQLStorage(&cfg)
 	if err != nil {
@@ -77,6 +84,13 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 		Helper: &helper,
 	}
 
+	// Создаем инстанцию GRPC API
+	serverGRPC := &grpc.APIServerGRPC{
+		Event:  use,
+		Logger: loggerGRPC,
+		Config: &cfg,
+	}
+
 	// Создаем инстанцию MQ
 	mq := &mq.APIServerMQ{
 		Logger:  loggerMQ,
@@ -89,6 +103,9 @@ func HTTPinit(cmd *cobra.Command, args []string) error {
 
 	// Запускаем Sheduler
 	go mq.ServeSheduler()
+
+	// Запускаем GRPC API
+	go serverGRPC.Serve()
 
 	// Запускаем http-сервер
 	return server.Serve()

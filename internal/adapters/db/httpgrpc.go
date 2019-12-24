@@ -39,7 +39,7 @@ func NewSQLStorage(cfg *adapters.Config) (*SQLEventStorage, error) {
 	if err = db.PingContext(ctx); err != nil {
 		return nil, err
 	}
-	log.WithFields(log.Fields{"type": "db"}).Info("Connect to DB (HTTP) - Good!")
+	log.WithFields(log.Fields{"type": "db"}).Info("Connect to DB - Good!")
 	return &SQLEventStorage{db: db}, nil
 }
 

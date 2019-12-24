@@ -7,6 +7,8 @@ export RABBITMQ_DEFAULT_PASS=rabbitmq
 
 http:
 	go run main.go http -c=./config/config.yaml
+grpc:
+	go run main.go grpc -c=./config/config.yaml
 test:
 	go test -cover -timeout 30s ./...
 service:

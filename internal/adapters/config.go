@@ -23,6 +23,12 @@ type ConfigHTTPLog struct {
 	Path  string `mapstructure:"path"`
 }
 
+// ConfigGRPCLog ...
+type ConfigGRPCLog struct {
+	Level string `mapstructure:"level"`
+	Path  string `mapstructure:"path"`
+}
+
 // ConfigEVENTLog ...
 type ConfigEVENTLog struct {
 	Level string `mapstructure:"level"`
@@ -54,12 +60,20 @@ type ConfigMQ struct {
 	Polling  string `mapstructure:"polling"`
 }
 
+// ConfigGRPC ...
+type ConfigGRPC struct {
+	Host string `mapstructure:"host"`
+	Port string `mapstructure:"port"`
+}
+
 // Config ...
 type Config struct {
 	HTTP     *ConfigHTTP     `mapstructure:"http"`
 	DB       *ConfigDB       `mapstructure:"db"`
 	MQ       *ConfigMQ       `mapstructure:"mq"`
+	GRPC     *ConfigGRPC     `mapstructure:"grpc"`
 	LogHTTP  *ConfigHTTPLog  `mapstructure:"log_http"`
+	LogGRPC  *ConfigGRPCLog  `mapstructure:"log_grpc"`
 	LogEVENT *ConfigEVENTLog `mapstructure:"log_event"`
 	LogMQ    *ConfigMQLog    `mapstructure:"log_mq"`
 }
@@ -86,6 +100,10 @@ func CreateConfig(file string, cfg *Config) error {
 		"level": "info",
 		"path":  "mq.log",
 	})
+	viper.SetDefault("log_grpc", map[string]string{
+		"level": "info",
+		"path":  "grpc.log",
+	})
 	viper.SetDefault("http", map[string]interface{}{
 		"host":         "127.0.0.1",
 		"port":         "8080",
@@ -107,6 +125,10 @@ func CreateConfig(file string, cfg *Config) error {
 		"RABBITMQ_DEFAULT_PASS": "rabbitmq",
 		"period":                "10m",
 		"polling":               "1m",
+	})
+	viper.SetDefault("grpc", map[string]interface{}{
+		"host": "127.0.0.1",
+		"port": "50051",
 	})
 
 	viper.AutomaticEnv()

@@ -67,21 +67,24 @@ func (api *APIServerHTTP) Serve() error {
 	// Устанавливаем handler для /hello
 	r.HandleFunc("/hello", api.helloHandler).Methods("GET")
 	// Устанавливаем handler для icon
-	r.HandleFunc("/hello", faviconHandler).Methods("GET")
+	r.HandleFunc("/favicon.ico", faviconHandler).Methods("GET")
+
+	// Создаем subrouter для api
+	s := r.PathPrefix("/api").Subrouter()
 	// Устанавливаем handler для /api/create_event
-	r.HandleFunc("/api/create_event", api.validateHandler(api.createHandler, v.Create)).Methods("POST")
+	s.HandleFunc("/create_event", api.validateHandler(api.createHandler, v.Create)).Methods("POST")
 	// Устанавливаем handler для /api/create_event
-	r.HandleFunc("/api/delete_event", api.deleteHandler).Methods("POST")
+	s.HandleFunc("/delete_event", api.deleteHandler).Methods("POST")
 	// Устанавливаем handler для /api/update_event
-	r.HandleFunc("/api/update_event", api.validateHandler(api.updateHandler, v.Change)).Methods("POST")
+	s.HandleFunc("/update_event", api.validateHandler(api.updateHandler, v.Change)).Methods("POST")
 	// Устанавливаем handler для /api/events_for_day
-	r.HandleFunc("/api/events_for_day", api.getDayHandler).Methods("GET")
+	s.HandleFunc("/events_for_day", api.getDayHandler).Methods("GET")
 	// Устанавливаем handler для /api/events_for_week
-	r.HandleFunc("/api/events_for_week", api.getWeekHandler).Methods("GET")
+	s.HandleFunc("/events_for_week", api.getWeekHandler).Methods("GET")
 	// Устанавливаем handler для /api/events_for_month
-	r.HandleFunc("/api/events_for_month", api.getMonthHandler).Methods("GET")
+	s.HandleFunc("/events_for_month", api.getMonthHandler).Methods("GET")
 	// Устанавливаем handler для /api/all_event
-	r.HandleFunc("/api/all_event", api.allHandler).Methods("GET")
+	s.HandleFunc("/all_event", api.allHandler).Methods("GET")
 	// Устанавливаем Middleware для log
 	r.Use(api.logHandler)
 
@@ -125,6 +128,8 @@ func (api *APIServerHTTP) Serve() error {
 
 	srv.Shutdown(ctx)
 	api.Logger.Infof(nil, "%s", "http-server shutting down...")
+	// fix - дожидаемся в консоли что все службы завепршаться (в прод такое ни ни ни ...)
+	time.Sleep(1 * time.Second)
 	return nil
 }
 
@@ -134,6 +139,7 @@ func (api *APIServerHTTP) helloHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello"))
 }
 
+// faviconHandler - иконка для ui
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "ui/favicon.ico")
 }

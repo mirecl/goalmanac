@@ -9,6 +9,9 @@ mq:
   port: 5672
   polling: 30s 
   period: 15m
+grpc:
+  host: 127.0.0.1
+  port: 50051
 log_http:
   level: info
   path: info.log
@@ -16,5 +19,8 @@ log_mq:
   level: info
   path: mq.log
 log_event:
+  level: info
+  path: info.log
+log_grpc:
   level: info
   path: info.log
