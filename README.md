@@ -453,7 +453,7 @@ message ResponseOK {
 Создал цепочку middleware из 1ого interceptor - логирование запросов (internal/adapters/grpc/interceptor.go (server.go))
 ```golang
 // Создаем цепочку middleware
-	middleware := grpc_middleware.ChainUnaryServer(g.unaryInterceptor)
+middleware := grpc_middleware.ChainUnaryServer(g.unaryInterceptor)
 ```
 
 ### Documentation
