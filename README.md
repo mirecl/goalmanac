@@ -345,6 +345,41 @@ create index notify_idx on almanac (starttime,notify);
 Бизнес логика (пакет internal/domain в примере) НЕ должен зависеть от кода GRPC сервера
 GRPC-сервер должен запускаться на порту указанном в конфиге и выводить в лог каждый обработанный запрос.
 
+**Описание**
+
+В конфигурацю добавились доп. параметры (./config/config.yaml).
+```yaml
+grpc:
+  host: 127.0.0.1
+  port: 50051
+log_grpc:
+  level: info
+  path: info.log
+```
+Значение default:
+```golang
+viper.SetDefault("log_grpc", map[string]string{
+	"level": "info",
+	"path":  "grpc.log",
+})
+```
+Для работы необходимо запустить сервис БД:
+```bash
+make service
+```
+Запуск gRPC осуществляется через команду (при запуске http-сервера):
+```bash
+make http
+```
+```golang
+// Запускаем GRPC API
+go serverGRPC.Serve()
+```
+или запускается как отдельный сервис:
+```bash
+make grpc
+```
+
 ### Documentation
 * [API Reference](http://godoc.org/github.com/mirecl/goalmanac)
 
